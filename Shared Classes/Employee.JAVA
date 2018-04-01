@@ -71,7 +71,7 @@ public class Employee {
     
     public void setSName(String sName)
     {
-        this.fName = sName;
+        this.sName = sName;
     }
     
     public void setDateOfBirth(String dateOfBirth)
