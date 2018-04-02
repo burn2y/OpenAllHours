@@ -17,11 +17,15 @@ public class CaretakerMainMenuGUI extends javax.swing.JFrame {
     ArrayList<Task> tskList = new ArrayList<Task>();
     ArrayList<Employee> empList = new ArrayList<Employee>(); 
     Integer sysUsername;
+    LoginGUI loginGUI;
     
     
-    public CaretakerMainMenuGUI(Integer username) {
+    public CaretakerMainMenuGUI(Integer username, ArrayList empList, ArrayList tskList, LoginGUI loginGUI) {
         initComponents();
         this.sysUsername = username;
+        this.empList = empList;
+        this.tskList = tskList;
+        this.loginGUI = loginGUI;
         Task newTask = new Task(296, 1, 6, null, "Clean Toilets", "22/03/18", "25/03/18", "Caretaker", 15.00f, 0.5f);
         tskList.add(newTask);
         newTask = new Task(2304, 1, 4, null, "Repair Broken Window", "22/03/18", "26/03/18", "Manager", 15.00f, 0.5f);
@@ -131,7 +135,7 @@ public class CaretakerMainMenuGUI extends javax.swing.JFrame {
     }                                           
 
     private void logoutActionPerformed(java.awt.event.ActionEvent evt) {                                       
-        new LoginGUI().setVisible(true);
+        loginGUI.setVisible(true);
         this.setVisible(false);
     }                                      
 

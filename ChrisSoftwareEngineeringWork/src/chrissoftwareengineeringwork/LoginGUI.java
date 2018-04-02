@@ -11,13 +11,17 @@ public class LoginGUI extends javax.swing.JFrame
 {
     
     ArrayList<Employee> empList = new ArrayList<>();
+    ArrayList<Task> tskList = new ArrayList<>();
+    AdminMainMenuUI adminMainMenu;
+    ManagerMainMenuUI managerMainMenu;
+    CaretakerMainMenuGUI caretakerMainMenuGUI;
 
     
     public LoginGUI() {
         initComponents();
         
         Employee newEmp = new Employee("Chris", "Burn", "07/07/1998", "male", 
-                                        "Caretaker", "chrisburn2009@hotmail.co.uk",
+                                        "Admin", "chrisburn2009@hotmail.co.uk",
                                         "PE 04 84 72 A", "3, St Georges Road", ""
                                         , "Hexham", "Northumberland", "NE462HG",
                                         1, "STADIUM10"); 
@@ -39,7 +43,7 @@ public class LoginGUI extends javax.swing.JFrame
         login = new javax.swing.JButton();
         username = new javax.swing.JTextField();
         lblUsername = new javax.swing.JLabel();
-        password = new javax.swing.JTextField();
+        password = new javax.swing.JPasswordField();
         lblPassword = new javax.swing.JLabel();
         title = new javax.swing.JLabel();
 
@@ -103,8 +107,8 @@ public class LoginGUI extends javax.swing.JFrame
     private void loginActionPerformed(java.awt.event.ActionEvent evt) 
     {                                      
         String usernameInput = username.getText();
-        String passwordInput = password.getText();
-        
+        String passwordInput = String.valueOf(password.getPassword());
+        Integer i = 0;
         for(Employee emp : empList)
         {
             String stfID = Integer.toString(emp.getSysEmpID());
@@ -116,35 +120,26 @@ public class LoginGUI extends javax.swing.JFrame
                 {
                     if(emp.getEmpType().equals("Caretaker"))
                     {
-                        CaretakerMainMenuGUI app = new CaretakerMainMenuGUI(emp.getSysEmpID());
-                        app.setVisible(true);
+                        caretakerMainMenuGUI = new CaretakerMainMenuGUI(emp.getSysEmpID(), empList, tskList, this);
+                        caretakerMainMenuGUI.setVisible(true);
                     }
                     else if(emp.getEmpType().equals("Manager"))
                     {
-                        new ManagerMainMenuUI().setVisible(true);
+                        managerMainMenu = new ManagerMainMenuUI(empList, tskList, this);
+                        managerMainMenu.setVisible(true);
                     }
                     else
                     {
-                        new AdminMainMenuUI().setVisible(true);
+                        adminMainMenu = new AdminMainMenuUI(empList, tskList, this);
+                        adminMainMenu.setVisible(true);
                     }
                     
                     this.setVisible(false);
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(this, "Username or Password incorrect!",
-            "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            else
-            {
-                      JOptionPane.showMessageDialog(this, "Username or Password incorrect!",
-            "Error", JOptionPane.ERROR_MESSAGE);
-
+                }            
 
             }
         }
-    }                                     
+    }
 
                              
 
@@ -152,7 +147,7 @@ public class LoginGUI extends javax.swing.JFrame
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblUsername;
     private javax.swing.JButton login;
-    private javax.swing.JTextField password;
+    private javax.swing.JPasswordField password;
     private javax.swing.JLabel title;
     private javax.swing.JTextField username;
     // End of variables declaration                   

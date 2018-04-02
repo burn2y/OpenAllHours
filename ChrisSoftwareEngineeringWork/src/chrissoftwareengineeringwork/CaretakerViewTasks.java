@@ -126,9 +126,9 @@ public class CaretakerViewTasks extends javax.swing.JFrame {
                 taskTable.setValueAt(tsk.getTskID(), i, 0);
                 taskTable.setValueAt(tsk.getTskDescription(), i, 1);
                 taskTable.setValueAt(Integer.toString(tsk.getPriority()), i, 2);
-                taskTable.setValueAt(Float.toString(tsk.getExpectedDuration()), i, 2);
-                taskTable.setValueAt(tsk.getRequiredSignOffLvl(), i, 3);
-                taskTable.setValueAt(tsk.getDateCreated(), i, 4); 
+                taskTable.setValueAt(Float.toString(tsk.getExpectedDuration()), i, 3);
+                taskTable.setValueAt(tsk.getRequiredSignOffLvl(), i, 4);
+                taskTable.setValueAt(tsk.getDateCreated(), i, 5); 
                i = i + 1;
             }
         }

@@ -65,7 +65,9 @@ public class Employee {
     public String getSysPassword() { return sysPassword; }
     public String toString()
     {
-        return "Name: " + fName + " " + sName +
+        if(addrLn2.isEmpty() == false)
+        {
+            return "Name: " + fName + " " + sName +
                "\nDate of Birth: " + dateOfBirth +
                "\nGender: " + gender +
                "\nEmployee Type: " + empType +
@@ -78,6 +80,22 @@ public class Employee {
                addrCounty + "\n" +
                addrPostcode + "\n" +
                "Employee ID Number: " + sysEmpID;
+        }
+        else
+        {
+            return "Name: " + fName + " " + sName +
+               "\nDate of Birth: " + dateOfBirth +
+               "\nGender: " + gender +
+               "\nEmployee Type: " + empType +
+               "\nEmail Address: " + email +
+               "\nNational Insurance Number: " + natInsuranceNo +
+               "\nAddress: \n" +
+               addrLn1 + "\n" +
+               addrCity + "\n" +
+               addrCounty + "\n" +
+               addrPostcode + "\n" +
+               "Employee ID Number: " + sysEmpID;
+        }
                 
                 
     }
@@ -89,7 +107,7 @@ public class Employee {
     
     public void setSName(String sName)
     {
-        this.fName = sName;
+        this.sName = sName;
     }
     
     public void setDateOfBirth(String dateOfBirth)
