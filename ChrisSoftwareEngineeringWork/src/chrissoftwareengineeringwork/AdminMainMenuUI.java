@@ -13,6 +13,7 @@ public class AdminMainMenuUI extends javax.swing.JFrame {
     AddEmployeeUI newAddEmployeeUI;
     LoginGUI loginForm;
     UpdateEmployeeUI newUpdateEmployeeUI;
+    RemoveEmployeeUI newRemoveEmployeeUI;
     ArrayList<Employee> empList;
     ArrayList<Task> tskList;
     LoginGUI loginGUI;
@@ -147,7 +148,9 @@ public class AdminMainMenuUI extends javax.swing.JFrame {
     }                                              
 
     private void removeEmployeeActionPerformed(java.awt.event.ActionEvent evt) {                                               
-        // TODO add your handling code here:
+        newRemoveEmployeeUI = new RemoveEmployeeUI(this);
+        newRemoveEmployeeUI.setVisible(true);
+        this.setVisible(false);
     }                                              
 
     private void logoutActionPerformed(java.awt.event.ActionEvent evt) {                                       

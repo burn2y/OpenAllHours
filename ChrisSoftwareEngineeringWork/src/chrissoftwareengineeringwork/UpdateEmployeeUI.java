@@ -2,6 +2,7 @@ package chrissoftwareengineeringwork;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -363,7 +364,10 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
         emp.setAddrPostcode(postcode.getText());
         emp.setSysPassword(String.valueOf(password.getPassword()));
         parent.getEmpList().add(emp);
-        System.out.println("Employee Updated" + parent.getEmpList().size());
+        this.setVisible(false);
+        parent.setVisible(true);
+        JOptionPane.showMessageDialog(null, "Employee Updated!", "Done", JOptionPane.INFORMATION_MESSAGE);
+        
     }
     
     
@@ -408,6 +412,7 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
                 county.setText(emp.getAddrCounty());
                 postcode.setText(emp.getAddrPostcode());
                 password.setText(emp.getSysPassword());
+                
             }
         }
     }     

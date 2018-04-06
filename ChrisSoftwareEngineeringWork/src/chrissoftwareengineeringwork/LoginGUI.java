@@ -116,6 +116,7 @@ public class LoginGUI extends javax.swing.JFrame
             
             if(usernameInput.equals(stfID))
             {
+                i = 1;
                 if(passwordInput.equals(stfPassword))
                 {
                     if(emp.getEmpType().equals("Caretaker"))
@@ -135,9 +136,18 @@ public class LoginGUI extends javax.swing.JFrame
                     }
                     
                     this.setVisible(false);
-                }            
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Username or password incorrect.", "Done", JOptionPane.ERROR_MESSAGE);
+                }
 
             }
+        }
+        
+        if(i != 1)
+        {
+            JOptionPane.showMessageDialog(null, "Username or password incorrect.", "Done", JOptionPane.ERROR_MESSAGE);
         }
     }
 

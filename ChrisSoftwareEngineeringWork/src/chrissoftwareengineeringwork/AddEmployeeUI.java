@@ -323,7 +323,10 @@ private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt)
                     addrLn1.getText(), addrLn2.getText(), city.getText(), 
                     county.getText(), postcode.getText(), 
                     parent.getEmpList().size() + 1, passwordInput);
-            System.out.println(newEmp.toString());
+            
+            JOptionPane.showMessageDialog(this, "Employee Added",
+            "Done", JOptionPane.INFORMATION_MESSAGE);
+            this.setVisible(true);
             parent.getEmpList().add(newEmp);
         }
         else
