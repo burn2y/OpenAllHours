@@ -8,12 +8,11 @@ package chrissoftwareengineeringwork;
 import java.util.Iterator;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author Chris
- */
 public class RemoveEmployeeUI extends javax.swing.JFrame {
 
+    /**
+     * Creates new form NewJFrame
+     */
     private AdminMainMenuUI parent;
     public RemoveEmployeeUI(AdminMainMenuUI p) {
         parent = p;
@@ -29,127 +28,114 @@ public class RemoveEmployeeUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
-        delete = new javax.swing.JButton();
-        lblStaffNo = new javax.swing.JLabel();
+        title = new javax.swing.JLabel();
+        lblEmpID = new javax.swing.JLabel();
         empNumber = new javax.swing.JTextField();
-        lblTitle = new javax.swing.JLabel();
+        back = new javax.swing.JButton();
+        delete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        title.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        title.setText("Remove Employee");
+
+        lblEmpID.setText("Employee Number: ");
+
+        back.setText("Back");
+        back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backActionPerformed(evt);
+            }
+        });
+
         delete.setText("Remove Employee");
-        delete.setToolTipText("");
         delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteActionPerformed(evt);
             }
         });
 
-        lblStaffNo.setText("Employee Number:");
-
-        lblTitle.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lblTitle.setText("Remove Employee");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(lblStaffNo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(empNumber))
-                .addContainerGap(101, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblTitle)
-                .addGap(96, 96, 96))
+                .addGap(31, 31, 31)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(title)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(lblEmpID)
+                            .addGap(18, 18, 18)
+                            .addComponent(empNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(back, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34)
+                        .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(67, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(lblTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addComponent(title)
+                .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblStaffNo)
+                    .addComponent(lblEmpID)
                     .addComponent(empNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(52, 52, 52)
-                .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(61, 61, 61))
+                .addGap(37, 37, 37)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(back)
+                    .addComponent(delete))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>                        
 
-    private void deleteActionPerformed(java.awt.event.ActionEvent evt) 
-    {   
-        Integer i = 0;
-        Employee remove = null;
-        Iterator<Employee> it = parent.getEmpList().iterator();
-        
-        while(it.hasNext())
+    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        if(parent.getEmpList().size() == 1)
         {
-            Employee emp = it.next();
-            if(empNumber.getText().equals(Integer.toString(emp.getSysEmpID())))
-            {
-                i = 1;
-                remove = emp;
-                JOptionPane.showMessageDialog(null, "Employee number " + emp.getSysEmpID() + " removed.", "Done", JOptionPane.INFORMATION_MESSAGE);
-                this.setVisible(false);
-                parent.setVisible(true);
-                
-            }
+            JOptionPane.showMessageDialog(null, "There is only one employee in the system!", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        parent.getEmpList().remove(remove);
-        if(i == 0)
+        else
         {
-            JOptionPane.showMessageDialog(null, "Employee does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
+            Integer i = 0;
+            Employee remove = null;
+            Iterator<Employee> it = parent.getEmpList().iterator();
+        
+            while(it.hasNext())
+            {
+                Employee emp = it.next();
+                if(empNumber.getText().equals(Integer.toString(emp.getSysEmpID())))
+                {
+                    i = 1;
+                    remove = emp;
+                    JOptionPane.showMessageDialog(null, "Employee number " + emp.getSysEmpID() + " removed.", "Done", JOptionPane.INFORMATION_MESSAGE);
+                    this.setVisible(false);
+                    parent.setVisible(true);
+                
+                }
+            }
+            parent.getEmpList().remove(remove);
+            if(i == 0)
+            {
+                JOptionPane.showMessageDialog(null, "Employee does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
         
     }                                      
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DeleteEmp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DeleteEmp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DeleteEmp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DeleteEmp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new DeleteEmp().setVisible(true);
-            }
-        });
-    }
+    private void backActionPerformed(java.awt.event.ActionEvent evt) {                                     
+        this.setVisible(false);
+        parent.setVisible(true);
+    }                                    
 
     // Variables declaration - do not modify                     
+    private javax.swing.JButton back;
     private javax.swing.JButton delete;
     private javax.swing.JTextField empNumber;
-    private javax.swing.JLabel lblStaffNo;
-    private javax.swing.JLabel lblTitle;
+    private javax.swing.JLabel lblEmpID;
+    private javax.swing.JLabel title;
     // End of variables declaration                   
 }
-

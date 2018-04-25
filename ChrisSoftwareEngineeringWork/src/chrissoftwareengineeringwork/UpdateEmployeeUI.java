@@ -2,8 +2,11 @@ package chrissoftwareengineeringwork;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -75,7 +78,7 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
 
         DefaultTableModel model = new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null}
+                
             },
             new String [] {
                 "Staff ID", "First Name", "Surname", "Employee Type"
@@ -342,44 +345,158 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
         parent.getEmpList().remove(emp);
-        emp.setFName(fName.getText());
-        emp.setSName(surname.getText());
-        String dob = dayOfBirth.getValue().toString() + "/" + monthOfBirth.getValue().toString() + "/" + yearOfBirth.getValue().toString();
-        emp.setDateOfBirth(dob);
-        if(male.isSelected())
+        ArrayList<String> errors = new ArrayList<>();
+        
+        if("".equals(fName.getText().trim()))
         {
-            emp.setGender("male");
+            errors.add("You have not entered a first name!");
         }
         else
         {
-            emp.setGender("female");
+            emp.setFName(fName.getText().trim());
         }
+        
+        if("".equals(surname.getText().trim()))
+        {
+            errors.add("You have not entered a surname!");
+        }
+        else
+        {
+            emp.setSName(surname.getText().trim());
+        }
+        /*
+        String dob = dayOfBirth.getValue().toString() + "/" + monthOfBirth.getValue().toString() + "/" + yearOfBirth.getValue().toString();
+        if(dateInFuture(dob))
+        {
+            errors.add("Date is not valid!");
+        }
+        else
+        {          
+            emp.setDateOfBirth(dob);
+        }
+        */
+        if(male.isSelected() && female.isSelected())
+        {
+            errors.add("You have selected both male and female!");
+        }
+        else
+        {
+            if(male.isSelected())
+            {
+                emp.setGender("male");
+            }
+            else
+            {
+                emp.setGender("female");
+            }
+        }
+        
         emp.setEmpType(empType.getSelectedItem().toString());
-        emp.setEmail(email.getText());
-        emp.setNatInsuranceNo(natInsuranceNo.getText());
-        emp.setAddrLn1(addrLn1.getText());
+        
+        if("".equals(email.getText().trim()))
+        {
+            errors.add("You have not entered an email address!");
+        }
+        else
+        {
+            emp.setEmail(email.getText());
+        }
+        
+        if("".equals(natInsuranceNo.getText().trim()))
+        {
+            errors.add("You have not entered a national insurance number!");
+        }
+        else
+        {
+            emp.setNatInsuranceNo(natInsuranceNo.getText());
+        }
+        
+        if("".equals(addrLn1.getText().trim()))
+        {
+            errors.add("You have not entered the first line of your address!");
+        }
+        else
+        {
+            emp.setAddrLn1(addrLn1.getText());
+        }
+        
         emp.setAddrLn2(addrLn2.getText());
-        emp.setAddrCity(city.getText());
-        emp.setAddrCounty(county.getText());
-        emp.setAddrPostcode(postcode.getText());
-        emp.setSysPassword(String.valueOf(password.getPassword()));
-        parent.getEmpList().add(emp);
-        this.setVisible(false);
-        parent.setVisible(true);
-        JOptionPane.showMessageDialog(null, "Employee Updated!", "Done", JOptionPane.INFORMATION_MESSAGE);
+        
+        if("".equals(city.getText().trim()))
+        {
+            errors.add("You have not entered a city for your address!");
+        }
+        else
+        {
+            emp.setAddrCity(city.getText());
+        }
+        
+        if("".equals(county.getText().trim()))
+        {
+            errors.add("You have not entered a county for your address!");
+        }
+        else
+        {
+            emp.setAddrCounty(county.getText());
+        }
+        
+        if("".equals(postcode.getText().trim()))
+        {
+            errors.add("You have not entered a postcode for your address!");
+        }
+        else
+        {
+            emp.setAddrPostcode(postcode.getText());
+        }
+        
+        if("".equals(password.getPassword().toString().trim()))
+        {
+            errors.add("You have not entered a password!");
+        }
+        else
+        {
+            emp.setSysPassword(String.valueOf(password.getPassword()));
+        }
+        
+        String errorStr = "There were some errors with the data you submitted: \n";
+        Integer i = 1;
+        for(String element : errors)
+        {   
+            errorStr = errorStr + i + ": " + element + "\n";
+            i = i + 1;
+        }
+        
+        if(errors.isEmpty())
+        {
+            parent.getEmpList().add(emp);
+            this.setVisible(false);
+            parent.setVisible(true);
+            JOptionPane.showMessageDialog(null, "Employee Updated!", "Done", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, errorStr, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
         
     }
     
     
     private void stageButtonActionPerformed(java.awt.event.ActionEvent evt) 
-    {                                         
-        Integer empID = Integer.parseInt(employeeTable.getModel().getValueAt(employeeTable.getSelectedRow(), 0).toString());
+    {   
+        if(employeeTable.getSelectedRow() == -1)
+        {
+            JOptionPane.showMessageDialog(null, "You have not selected an employee!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        else
+        {
+            Integer empID = Integer.parseInt(employeeTable.getModel().getValueAt(employeeTable.getSelectedRow(), 0).toString());
         for(Employee emp : parent.getEmpList())
         {
-            this.emp = emp;
+            
             if(emp.getSysEmpID() == empID)
             {
-                
+                this.emp = emp;
                 fName.setText(emp.getFName());
                 surname.setText(emp.getSName());
                 String dob = new String(emp.getDateOfBirth());
@@ -415,7 +532,36 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
                 
             }
         }
-    }     
+        }
+        
+    }
+    
+    public boolean dateInFuture(String date)
+    {
+        String now = LocalDateTime.now().toString();
+        String[] todaysDate = now.split("/");
+        String[] dateInput  = date.split("/");
+        
+        if(
+                Integer.parseInt(dateInput[2]) > Integer.parseInt(todaysDate[2])
+                ||
+                (Integer.parseInt(dateInput[2]) == Integer.parseInt(todaysDate[2])
+                && Integer.parseInt(dateInput[1]) > Integer.parseInt(todaysDate[1]))
+                || 
+                (Integer.parseInt(dateInput[2]) == Integer.parseInt(todaysDate[2])
+                && Integer.parseInt(dateInput[1]) == Integer.parseInt(todaysDate[1])
+                && Integer.parseInt(dateInput[0]) > Integer.parseInt(todaysDate[0])
+                )
+           )
+        {
+                return true;
+        }
+        else
+        {
+            return false;
+        }
+        
+    }
 
     // Variables declaration - do not modify                     
     private javax.swing.JTextField addrLn1;

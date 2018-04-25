@@ -26,10 +26,7 @@ public class CaretakerMainMenuGUI extends javax.swing.JFrame {
         this.empList = empList;
         this.tskList = tskList;
         this.loginGUI = loginGUI;
-        Task newTask = new Task(296, 1, 6, null, "Clean Toilets", "22/03/18", "25/03/18", "Caretaker", 15.00f, 0.5f);
-        tskList.add(newTask);
-        newTask = new Task(2304, 1, 4, null, "Repair Broken Window", "22/03/18", "26/03/18", "Manager", 15.00f, 0.5f);
-        tskList.add(newTask);
+        
     }
     
     public ArrayList<Task> getTasks() { return tskList; }

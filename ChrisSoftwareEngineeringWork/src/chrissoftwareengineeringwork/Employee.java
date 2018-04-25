@@ -33,36 +33,36 @@ public class Employee {
                     String addrCity, String addrCounty, String addrPostcode,
                     Integer sysEmpID, String sysPassword)
     {
-        this.fName = fName;
-        this.sName = sName;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-        this.empType = empType;
-        this.email = email;
+        this.fName          = fName;
+        this.sName          = sName;
+        this.dateOfBirth    = dateOfBirth;
+        this.gender         = gender;
+        this.empType        = empType;
+        this.email          = email;
         this.natInsuranceNo = natInsuranceNo;
-        this.addrLn1 = addrLn1;
-        this.addrLn2 = addrLn2;
-        this.addrCity = addrCity;
-        this.addrCounty = addrCounty;
-        this.addrPostcode = addrPostcode;
-        this.sysEmpID = sysEmpID;
-        this.sysPassword = sysPassword;
+        this.addrLn1        = addrLn1;
+        this.addrLn2        = addrLn2;
+        this.addrCity       = addrCity;
+        this.addrCounty     = addrCounty;
+        this.addrPostcode   = addrPostcode;
+        this.sysEmpID       = sysEmpID;
+        this.sysPassword    = sysPassword;
     }
     
-    public String getFName() { return fName; }
-    public String getSName() { return sName; }
-    public String getDateOfBirth() { return dateOfBirth; }
-    public String getGender() { return gender; }
-    public String getEmpType() { return empType; }
-    public String getEmail() { return email; }
+    public String getFName()          { return fName; }
+    public String getSName()          { return sName; }
+    public String getDateOfBirth()    { return dateOfBirth; }
+    public String getGender()         { return gender; }
+    public String getEmpType()        { return empType; }
+    public String getEmail()          { return email; }
     public String getNatInsuranceNo() { return natInsuranceNo; }
-    public String getAddrLn1() { return addrLn1; }
-    public String getAddrLn2() { return addrLn2; }
-    public String getAddrCity() { return addrCity; }
-    public String getAddrCounty() { return addrCounty; }
-    public String getAddrPostcode() { return addrPostcode; } 
-    public Integer getSysEmpID() { return sysEmpID; }
-    public String getSysPassword() { return sysPassword; }
+    public String getAddrLn1()        { return addrLn1; }
+    public String getAddrLn2()        { return addrLn2; }
+    public String getAddrCity()       { return addrCity; }
+    public String getAddrCounty()     { return addrCounty; }
+    public String getAddrPostcode()   { return addrPostcode; } 
+    public Integer getSysEmpID()      { return sysEmpID; }
+    public String getSysPassword()    { return sysPassword; }
     public String toString()
     {
         if(addrLn2.isEmpty() == false)

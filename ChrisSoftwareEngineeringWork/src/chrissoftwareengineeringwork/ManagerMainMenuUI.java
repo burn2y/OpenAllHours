@@ -3,15 +3,16 @@ package chrissoftwareengineeringwork;
 import java.util.ArrayList;
 
 
-public class ManagerMainMenuUI extends javax.swing.JFrame {
-
+public class ManagerMainMenuUI extends javax.swing.JFrame 
+{
     ArrayList<Employee> empList = new ArrayList<>();
-    ArrayList<Task> tskList = new ArrayList<>();
+    ArrayList<Task>     tskList = new ArrayList<>();
     LoginGUI loginGUI;
     
-    public ManagerMainMenuUI(ArrayList empList, ArrayList tskList, LoginGUI loginGUI) {
-        this.tskList = tskList;
-        this.empList = empList;
+    public ManagerMainMenuUI(ArrayList empList, ArrayList tskList, LoginGUI loginGUI) 
+    {
+        this.tskList  = tskList;
+        this.empList  = empList;
         this.loginGUI = loginGUI;
         initComponents();
     }
@@ -62,7 +63,7 @@ public class ManagerMainMenuUI extends javax.swing.JFrame {
         allocateDailyTasks.setText("Allocate Daily Tasks");
         allocateDailyTasks.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                // allocateDailyTasksActionPerformed(evt);
+                allocateDailyTasksActionPerformed(evt);
             }
         });
 
@@ -122,15 +123,18 @@ public class ManagerMainMenuUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
-    private void addTaskActionPerformed(java.awt.event.ActionEvent evt) {                                        
+    private void addTaskActionPerformed(java.awt.event.ActionEvent evt) 
+    {                                        
         // TODO add your handling code here:
     }                                       
 
-    private void updateTaskActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void updateTaskActionPerformed(java.awt.event.ActionEvent evt) 
+    {                                           
         // TODO add your handling code here:
     }                                          
 
-    private void removeTaskActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void removeTaskActionPerformed(java.awt.event.ActionEvent evt) 
+    {                                           
         
     }                                          
 
@@ -138,16 +142,15 @@ public class ManagerMainMenuUI extends javax.swing.JFrame {
     {                                                   
         AllocateTasksStp1 stp1 = new AllocateTasksStp1(this);
         stp1.setVisible(true);
-        this.setVisible(false);
     }                                                  
 
-    private void logoutActionPerformed(java.awt.event.ActionEvent evt) {                                       
+    private void logoutActionPerformed(java.awt.event.ActionEvent evt) 
+    {                                       
         this.setVisible(false);
         loginGUI.setVisible(true);
-
+        
     }                                      
-
-    // Variables declaration - do not modify                     
+                     
     private javax.swing.JButton addTask;
     private javax.swing.JButton allocateDailyTasks;
     private javax.swing.JTextField logInInfo;

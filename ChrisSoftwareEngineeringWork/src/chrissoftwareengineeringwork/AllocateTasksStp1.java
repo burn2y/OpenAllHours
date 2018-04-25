@@ -1,6 +1,7 @@
 package chrissoftwareengineeringwork;
 
 import java.awt.event.ActionEvent;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -8,7 +9,6 @@ import java.awt.event.ActionEvent;
  */
 public class AllocateTasksStp1 extends javax.swing.JFrame {
 
-    private AllocateTasksStp2 allocateTasksStp2;
     private ManagerMainMenuUI parent;
             
     
@@ -33,8 +33,8 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
         next = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        tblTasks.setModel(new javax.swing.table.DefaultTableModel(
+        
+        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -56,7 +56,23 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
-        });
+        };
+        
+        for(Task tsk : parent.getTskList())
+        {
+            if(tsk.getAllocatedTo() == null)
+            {
+                Integer tskID = tsk.getTskID();
+                Object[] row = new Object[]
+                {
+                    tskID, tsk.getTskDescription(), tsk.getPhysicalDemandsRating(), tsk.getExpectedDuration()
+                };
+                model.addRow(row);
+            }
+        }
+        
+        tblTasks.setModel(model);
+        
         jScrollPane1.setViewportView(tblTasks);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -101,58 +117,49 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
                 .addComponent(next)
                 .addContainerGap(37, Short.MAX_VALUE))
         );
+        
+
         pack();
-        /*
-        try
-        {
-            for(Task tsk : parent.getTskList())
-            {
-                if(tsk.getAllocatedTo() == null)
-                {
-                    tblTasks.setValueAt(tsk.getTskID(), i, 0);
-                    tblTasks.setValueAt(tsk.getTskDescription(), i, 1);
-                    tblTasks.setValueAt(Integer.toString(tsk.getPriority()), i, 2);
-                    tblTasks.setValueAt(Float.toString(tsk.getExpectedDuration()), i, 3);
-                    tblTasks.setValueAt(tsk.getRequiredSignOffLvl(), i, 4);
-                    tblTasks.setValueAt(tsk.getDateCreated(), i, 5); 
-                }
-            }
-        }
-        catch(NullPointerException e)
-        {
-            System.out.println("Error");
-        }
-*/
+        
+        
     }// </editor-fold>                        
 
 
     private void nextActionPerformed(ActionEvent evt)
     {
-        Integer selectedRow = tblTasks.getSelectedRow();
-        Integer tskID = Integer.parseInt(tblTasks.getValueAt(selectedRow, 0).toString());
-        Task tsk = null;
-        for(Task task : parent.getTskList())
+        if(tblTasks.getSelectedRow() == -1)
         {
-            if(task.getTskID() == tskID)
-            {
-                tsk = task;
-            }
+            JOptionPane.showMessageDialog(null, "You have not selected a task!", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
-        
-        allocateTasksStp2 = new AllocateTasksStp2(this, tsk);
+        else
+        {
+            Integer selectedRow = tblTasks.getSelectedRow();
+            Integer tskID = Integer.parseInt(tblTasks.getValueAt(selectedRow, 0).toString());
+            Task tsk = null;
+            for(Task task : parent.getTskList())
+            {
+                if(task.getTskID() == tskID)
+                {
+                    tsk = task;
+                }
+            }
+            AllocateTasksStp2 allocateTasksStp2 = new AllocateTasksStp2(this, tsk);
+            allocateTasksStp2.setVisible(true);
+            this.setVisible(false);
+        }
         
     }
     
-    
-    
-    
+    public ManagerMainMenuUI getParent()
+    {
+        return parent;
+    }
+  
     // Variables declaration - do not modify                     
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton next;
-    private javax.swing.JTable tblTasks;
-    // End of variables declaration                   
+    private javax.swing.JTable tblTasks;                  
 }
 

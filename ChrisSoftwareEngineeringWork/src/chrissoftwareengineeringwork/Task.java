@@ -22,27 +22,27 @@ public class Task
                 String dueDate, String requiredSignOffLvl, 
                 Float physicalDemandsRating, Float expectedDuration)
     {
-        this.tskID = tskID; //unique task ID
-        this.allocatedTo = allocatedTo; //staff no the tsk is allocated to
-        this.priority = priority; //priority of task (0 - 10)
-        this.signedOffBy = signedOffBy; // staff number the task was signed off by
-        this.tskDescription = tskDescription; // description of the task
-        this.dateCreated = dateCreated; // date the task was created
-        this.requiredSignOffLvl = requiredSignOffLvl; //who is required to sign off the task
+        this.tskID                 = tskID; //unique task ID
+        this.allocatedTo           = allocatedTo; //staff no the tsk is allocated to
+        this.priority              = priority; //priority of task (0 - 10)
+        this.signedOffBy           = signedOffBy; // staff number the task was signed off by
+        this.tskDescription        = tskDescription; // description of the task
+        this.dateCreated           = dateCreated; // date the task was created
+        this.requiredSignOffLvl    = requiredSignOffLvl; //who is required to sign off the task
         this.physicalDemandsRating = physicalDemandsRating; // physical demands rating of the task 0.00 - 100.00
-        this.expectedDuration = expectedDuration; // expected duration (hours)
+        this.expectedDuration      = expectedDuration; // expected duration (hours)
     }
     
-    public Integer getTskID() { return tskID; }
-    public Integer getAllocatedTo() { return allocatedTo; }
-    public Integer getPriority() { return priority; }
-    public Integer getSignedOffBy() { return signedOffBy; }
+    public Integer getTskID()         { return tskID; }
+    public Integer getAllocatedTo()   { return allocatedTo; }
+    public Integer getPriority()      { return priority; }
+    public Integer getSignedOffBy()   { return signedOffBy; }
     public String getTskDescription() { return tskDescription ; }
-    public String getDateCreated() { return dateCreated; }
+    public String getDateCreated()    { return dateCreated; }
     
-    public String getRequiredSignOffLvl() { return requiredSignOffLvl; }
+    public String getRequiredSignOffLvl()   { return requiredSignOffLvl; }
     public Float getPhysicalDemandsRating() { return physicalDemandsRating; }
-    public Float getExpectedDuration() { return expectedDuration; }
+    public Float getExpectedDuration()      { return expectedDuration; }
     public String toString()
     {
         return "Task ID: " + tskID + 
@@ -83,12 +83,12 @@ public class Task
     
     public void setDateCreated(String dateCreated)
     {
-        this.dateCreated = dateCreated;
+        this.dateCreated           = dateCreated;
     }
     
     public void setRequiredSignOffLvl(String requiredSignOffLvl)
     {
-        this.requiredSignOffLvl = requiredSignOffLvl;
+        this.requiredSignOffLvl    = requiredSignOffLvl;
     }
     
     public void setPysicalDemandsRating(Float physicalDemandsRating)
@@ -98,8 +98,7 @@ public class Task
     
     public void setExpectedDuration(Float expectedDuration)
     {
-        this.expectedDuration = expectedDuration;
+        this.expectedDuration      = expectedDuration;
     }
-    
-    
+
 }

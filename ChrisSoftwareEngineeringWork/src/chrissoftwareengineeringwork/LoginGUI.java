@@ -27,6 +27,14 @@ public class LoginGUI extends javax.swing.JFrame
                                         1, "STADIUM10"); 
         empList.add(newEmp);
         
+        Task newTask = new Task(296, null, 6, null, "Clean Toilets", "22/03/18", 
+                "25/03/18", "Caretaker", 15.00f, 0.5f);       
+        tskList.add(newTask);
+        
+        newTask = new Task(2304, 1, 4, null, "Repair Broken Window", "22/03/18", 
+                "26/03/18", "Manager", 15.00f, 0.5f);
+        tskList.add(newTask);
+        
         
         
     }
@@ -139,7 +147,7 @@ public class LoginGUI extends javax.swing.JFrame
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(null, "Username or password incorrect.", "Done", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Username or password incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
             }
@@ -147,7 +155,7 @@ public class LoginGUI extends javax.swing.JFrame
         
         if(i != 1)
         {
-            JOptionPane.showMessageDialog(null, "Username or password incorrect.", "Done", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Username or password incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

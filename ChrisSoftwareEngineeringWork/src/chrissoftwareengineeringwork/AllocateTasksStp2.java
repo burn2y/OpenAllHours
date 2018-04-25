@@ -1,9 +1,8 @@
 package chrissoftwareengineeringwork;
 
-/**
- *
- * @author Chris
- */
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 public class AllocateTasksStp2 extends javax.swing.JFrame {
 
     AllocateTasksStp1 stp1;
@@ -28,7 +27,7 @@ public class AllocateTasksStp2 extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        tblEmployee.setModel(new javax.swing.table.DefaultTableModel(
+        DefaultTableModel model = new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -39,25 +38,46 @@ public class AllocateTasksStp2 extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
-            boolean[] canEdit = new boolean [] {
+            boolean[] canEdit = new boolean [] 
+            {
                 false, false, false
             };
 
-            public Class getColumnClass(int columnIndex) {
+            public Class getColumnClass(int columnIndex) 
+            {
                 return types [columnIndex];
             }
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
+            public boolean isCellEditable(int rowIndex, int columnIndex) 
+            {
                 return canEdit [columnIndex];
             }
-        });
+        };
+        
+        for(Employee emp : stp1.getParent().getEmpList())
+        {
+            if(emp.getEmpType() == "Caretaker")
+            {
+                String empID = Integer.toString(emp.getSysEmpID());
+                Object[] row = new Object[]
+                {
+                    empID, emp.getFName(), emp.getSName(), emp.getEmpType()
+                };
+                model.addRow(row);
+            }
+            
+        }
+        
+        tblEmployee.setModel(model);
+        
+        
         jScrollPane1.setViewportView(tblEmployee);
 
         allocate.setText("Allocate");
 
         jLabel1.setText("Select an employee to allocate the task to");
 
-        lblTask.setText("Task: " + tsk.getTskID() + "- " + tsk.getTskDescription());
+        //lblTask.setText("Task: ID - " + tsk.getTskID() + "- " + tsk.getTskDescription() + "Physical Demands - " + tsk.getPhysicalDemandsRating());
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel2.setText("Employees");
@@ -94,11 +114,33 @@ public class AllocateTasksStp2 extends javax.swing.JFrame {
                 .addComponent(allocate)
                 .addContainerGap(40, Short.MAX_VALUE))
         );
-
+        
+        allocate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                allocateButtonActionPerformed(evt);
+            }
+        });
         pack();
+        
     }// </editor-fold>                        
 
-
+    private void allocateButtonActionPerformed(java.awt.event.ActionEvent evt)
+    {
+        if(tblEmployee.getSelectedRow() == -1)
+        {
+            JOptionPane.showMessageDialog(null, "You have not selected an employee!", "Done", JOptionPane.ERROR_MESSAGE);
+        }
+        Integer empNo = Integer.parseInt(tblEmployee.getValueAt(tblEmployee.getSelectedRow(), 0).toString());
+        for(Task tsk : stp1.getParent().getTskList())
+        {
+            if(this.tsk == tsk )
+            {
+                tsk.setAllocatedTo(empNo);
+                JOptionPane.showMessageDialog(null, "Task Allocated!", "Done", JOptionPane.INFORMATION_MESSAGE);
+                this.setVisible(false);
+            }
+        }
+    }
     // Variables declaration - do not modify                     
     private javax.swing.JButton allocate;
     private javax.swing.JLabel jLabel1;
