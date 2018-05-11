@@ -9,11 +9,9 @@ package capytecmaster;
  * 
  */
 public class CapytecMaster {
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         LoginGUI loginGUI = new LoginGUI();
-        
-        AdminMainMenuUI p = new AdminMainMenuUI(loginGUI);
-        AddEmployeeUI addEmp = new AddEmployeeUI(p);
-        addEmp.setVisible(true);
+        loginGUI.setVisible(true);
     } 
 }

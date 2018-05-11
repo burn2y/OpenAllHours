@@ -1,5 +1,9 @@
 package capytecmaster;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -19,6 +23,10 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
 
     private AdminMainMenuUI parent;
     private Employee emp;
+    Connection dbConn = connection.connect();
+    Statement stmt = null;
+    ArrayList<Employee> empList = new ArrayList<>();
+    
     public UpdateEmployeeUI(AdminMainMenuUI p) 
     {
         parent = p;
@@ -98,7 +106,31 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
         };
         
         // query database. get all employees into arrayList
-        ArrayList<Employee> empList = new ArrayList<>();
+        
+        String getAllEmpsSql = "SELECT * FROM EMPLOYEE";
+             try
+            {
+                stmt = dbConn.createStatement();   
+                ResultSet rs = stmt.executeQuery(getAllEmpsSql);
+                while(rs.next())
+                {
+                    Employee emp = new Employee(rs.getString("Firstname"), 
+                            rs.getString("Surname"), rs.getString("DateOfBirth"),
+                            rs.getString("Gender"), rs.getString("EmploymentType"),
+                            rs.getString("Email"), rs.getString("NINO"), 
+                            rs.getString("AddressLine1"), 
+                            rs.getString("AddressLineTwo"), rs.getString("City"), 
+                            rs.getString("County"), rs.getString("Postcode"),
+                            rs.getInt("ID") ,rs.getString("Password"));
+                    empList.add(emp);
+                }
+            }
+            catch(SQLException sqlex) {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+        }
+             
+        
         for(Employee emp : empList)
         {
             String empID = Integer.toString(emp.getSysEmpID());
@@ -344,7 +376,18 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
     {
         
         // connect DB. Execute below stmt
-        String sqlRemove = "DELETE * FROM EMPLOYEE WHERE EMP_ID = " + "'" + emp.getSysEmpID() + "'";
+        String sqlRemove = "DELETE * FROM EMPLOYEE WHERE ID = " + emp.getSysEmpID();
+        
+        try
+            {
+                stmt = dbConn.createStatement(); // create a statement
+                stmt.executeUpdate(sqlRemove); // execute update statement
+            }
+            catch(SQLException sqlex) 
+            {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+            }
         
         ArrayList<String> errors = new ArrayList<>();
         
@@ -474,15 +517,26 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Employee Updated!", "Done", JOptionPane.INFORMATION_MESSAGE);
             
             // Connect DB. Execute below stmt
-            String sqlInsert = 
-                    "INSERT INTO EMPLOYEE VALUES (" + "'" +     emp.getFName() + 
-                    "' , '" + emp.getSName()        + "' , '" + emp.getDateOfBirth() + 
-                    "' , '" + emp.getGender()       + "' , '" + emp.getEmpType() + 
-                    "' , '" + emp.getEmail()        + "' , '" + emp.getNatInsuranceNo() + 
-                    "' , '" + emp.getAddrLn1()      + "' , '" + emp.getAddrLn2() +
-                    "' , '" + emp.getAddrCity()     + "' , '" + emp.getAddrCounty() +
-                    "' , '" + emp.getAddrPostcode() + "' , '" + emp.getSysEmpID() +
-                    "' , '" + emp.getSysPassword();
+             String sqlInsert = 
+                    "INSERT INTO employee (ID, Firstname, DateOfBirth, Surname, Gender, EmploymentType, Email, NINO, AddressLine1, AddressLineTwo, City, County, Postcode, Password)VALUES (" + emp.getSysEmpID() +  
+                    " , '" +  emp.getFName() + "' , '" + emp.getDateOfBirth() + 
+                    "' , '" + emp.getSName() + "' , '" + emp.getGender() + 
+                    "' , '" + emp.getEmpType() + "' , '" + emp.getEmail() + 
+                    "' , '" + emp.getNatInsuranceNo() + "' , '" + emp.getAddrLn1() +
+                    "' , '" + emp.getAddrLn2() + "', ' " + emp.getAddrCity() +
+                    "' , '" + emp.getAddrCounty() + "' , '" + emp.getAddrPostcode() +
+                    "' , '" + emp.getSysPassword() + "')";
+            
+            try
+            {
+                stmt = dbConn.createStatement(); // create a statement
+                stmt.executeUpdate(sqlInsert); // execute update statement
+            }
+            catch(SQLException sqlex) 
+            {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+            }
             
         }
         else
@@ -505,7 +559,6 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
         
         
         // get all employees from db. store in EmpList
-        ArrayList<Employee> empList = new ArrayList<>();
         for(Employee emp : empList)
         {
             

@@ -6,9 +6,11 @@ import java.util.ArrayList;
 public class ManagerMainMenuUI extends javax.swing.JFrame 
 {
     LoginGUI loginGUI;
+    Integer empID;
     
-    public ManagerMainMenuUI(LoginGUI loginGUI) 
+    public ManagerMainMenuUI(LoginGUI loginGUI, Integer empID) 
     {
+        this.empID = empID;
         this.loginGUI = loginGUI;
         initComponents();
     }

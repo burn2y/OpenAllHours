@@ -18,6 +18,8 @@ public class AddEmployeeUI extends javax.swing.JFrame {
    
     private AdminMainMenuUI parent;
     Connection dbConn = connection.connect();
+    Statement stmt = null;
+    Integer maxEmpID = null;
     
     public AddEmployeeUI(AdminMainMenuUI p) {
         parent = p;       
@@ -316,38 +318,50 @@ private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt)
             
             
             // get Max employeeID from db. store it in maxEmpID
-            String maxEmpIDSql = "SELECT MAX(EMP_ID) FROM EMPLOYEE";
-            String maxEmpID = "1";
+            String maxEmpIDSql = "SELECT MAX(ID) AS MAXID FROM EMPLOYEE";
+             try
+            {
+                stmt = dbConn.createStatement();   
+                ResultSet rs = stmt.executeQuery(maxEmpIDSql);
+                if(rs.next())
+                {
+                    maxEmpID = rs.getInt("MAXID");
+                }
+            }
+            catch(SQLException sqlex) {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+        }
             
             Employee newEmp = new Employee(name.getText(), jTextField1.getText(), 
                     dateOfBirth, gender, empType, 
                     email.getText(), natInsuranceNo.getText(), 
                     addrLn1.getText(), addrLn2.getText(), city.getText(), 
                     county.getText(), postcode.getText(), 
-                    1, passwordInput);
+                    maxEmpID + 1, passwordInput);
             
             
             
             String sqlInsert = 
-                    "INSERT INTO EMPLOYEE VALUES (" + "'" + newEmp.getSysEmpID() + 
-                    "' , '" + newEmp.getFName() + "' , '" + newEmp.getDateOfBirth() + 
+                    "INSERT INTO employee (ID, Firstname, DateOfBirth, Surname, Gender, EmploymentType, Email, NINO, AddressLine1, AddressLineTwo, City, County, Postcode, Password)VALUES (" + newEmp.getSysEmpID() +  
+                    " , '" + newEmp.getFName() + "' , '" + newEmp.getDateOfBirth() + 
                     "' , '" + newEmp.getSName() + "' , '" + newEmp.getGender() + 
                     "' , '" + newEmp.getEmpType() + "' , '" + newEmp.getEmail() + 
                     "' , '" + newEmp.getNatInsuranceNo() + "' , '" + newEmp.getAddrLn1() +
                     "' , '" + newEmp.getAddrLn2() + "', ' " + newEmp.getAddrCity() +
                     "' , '" + newEmp.getAddrCounty() + "' , '" + newEmp.getAddrPostcode() +
                     "' , '" + newEmp.getSysPassword() + "')";
-            Statement stmt = null;
             
             try
             {
                 stmt = dbConn.createStatement(); // create a statement
                 stmt.executeUpdate(sqlInsert); // execute update statement
             }
-            catch(SQLException sqlex) {
+            catch(SQLException sqlex) 
+            {
               System.out.println(sqlex.getMessage());
               System.out.println("Duration update error\n");
-        }
+            }
             
             
             JOptionPane.showMessageDialog(this, "Employee Added",

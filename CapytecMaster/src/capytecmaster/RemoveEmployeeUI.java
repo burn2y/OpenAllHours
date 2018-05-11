@@ -5,6 +5,10 @@
  */
 package capytecmaster;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Iterator;
 import javax.swing.JOptionPane;
 
@@ -14,6 +18,9 @@ public class RemoveEmployeeUI extends javax.swing.JFrame {
      * Creates new form NewJFrame
      */
     private AdminMainMenuUI parent;
+    Connection dbConn = connection.connect();
+    Statement stmt = null;
+    
     public RemoveEmployeeUI(AdminMainMenuUI p) {
         parent = p;
         initComponents();
@@ -95,8 +102,23 @@ public class RemoveEmployeeUI extends javax.swing.JFrame {
 
     private void deleteActionPerformed(java.awt.event.ActionEvent evt) {   
         
-        // get number of emps in db
+        String sqlGetNoOfEmps = "SELECT COUNT(*) AS NUMOFEMPS FROM EMPLOYEE";
         Integer numOfEmpsInDatabase = 1;
+        try
+            {
+                stmt = dbConn.createStatement();   
+                ResultSet rs = stmt.executeQuery(sqlGetNoOfEmps);
+                if(rs.next())
+                {
+                    numOfEmpsInDatabase = rs.getInt("NUMOFEMPS");
+                }
+            }
+            catch(SQLException sqlex) 
+            {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+            }
+        
         if(numOfEmpsInDatabase == 1)
         {
             JOptionPane.showMessageDialog(null, "There is only one employee in the system!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -104,9 +126,20 @@ public class RemoveEmployeeUI extends javax.swing.JFrame {
         else
         {
            Integer empID = Integer.parseInt(empNumber.getText());
-            // connect DB. Execute Stmt
-            String sqlRemove = 
-                    "DELETE * FROM EMPLOYEE WHERE EMP_ID = " + "'" + empID + "'";
+            String sqlRemove = "DELETE * FROM EMPLOYEE WHERE ID = " + empID;
+            
+            try
+            {
+                stmt = dbConn.createStatement(); // create a statement
+                stmt.executeUpdate(sqlRemove); // execute update statement
+            }
+            catch(SQLException sqlex) 
+            {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+            }
+            
+            JOptionPane.showMessageDialog(null, "Employee number " + empID + " removed." , "Done", JOptionPane.INFORMATION_MESSAGE);
         }
      
     }                                      

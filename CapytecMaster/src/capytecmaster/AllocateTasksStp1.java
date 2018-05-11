@@ -1,6 +1,10 @@
 package capytecmaster;
 
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
@@ -11,6 +15,8 @@ import javax.swing.JOptionPane;
 public class AllocateTasksStp1 extends javax.swing.JFrame {
 
     private ManagerMainMenuUI parent;
+    Connection dbConn = connection.connect();
+    Statement stmt = null;
             
     
     public AllocateTasksStp1(ManagerMainMenuUI p) {
@@ -60,8 +66,33 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
         };
         
         // connect to DB. get all records into arrayList. substitute arrayList of tasks into for loop below
-        String getTasksSql = "SELECT * FROM TASK";
+        
         ArrayList<Task> tskList = new ArrayList<>();
+        
+        String getAllTsksSql = "SELECT * FROM TASKS";
+             try
+            {
+                stmt = dbConn.createStatement();   
+                ResultSet rs = stmt.executeQuery(getAllTsksSql);
+                while(rs.next())
+                {
+                    
+                
+                    Employee emp = new Employee(rs.getString("Firstname"), 
+                            rs.getString("Surname"), rs.getString("DateOfBirth"),
+                            rs.getString("Gender"), rs.getString("EmploymentType"),
+                            rs.getString("Email"), rs.getString("NINO"), 
+                            rs.getString("AddressLine1"), 
+                            rs.getString("AddressLineTwo"), rs.getString("City"), 
+                            rs.getString("County"), rs.getString("Postcode"),
+                            rs.getInt("ID") ,rs.getString("Password"));
+                    //tskList.add(tsk);
+                }
+            }
+            catch(SQLException sqlex) {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+        }
         
         for(Task tsk : tskList)
         {

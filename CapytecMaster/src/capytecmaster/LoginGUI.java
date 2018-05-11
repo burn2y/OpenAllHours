@@ -1,5 +1,9 @@
 package capytecmaster;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
@@ -9,6 +13,9 @@ import javax.swing.JOptionPane;
  */
 public class LoginGUI extends javax.swing.JFrame 
 {
+    Connection dbConn = connection.connect();
+    Statement stmt = null;
+    
     public LoginGUI() {
         initComponents();
     }
@@ -88,8 +95,32 @@ public class LoginGUI extends javax.swing.JFrame
                 
         // connect to db. get all employees into arrayList.
         ArrayList<Employee> empList = new ArrayList<>();
+        String getAllEmpsSql = "SELECT * FROM EMPLOYEE";
+        try
+        {
+            stmt = dbConn.createStatement();   
+            ResultSet rs = stmt.executeQuery(getAllEmpsSql);
+            while(rs.next())
+            {
+                Employee emp = new Employee(rs.getString("Firstname"), 
+                        rs.getString("Surname"), rs.getString("DateOfBirth"),
+                        rs.getString("Gender"), rs.getString("EmploymentType"),
+                        rs.getString("Email"), rs.getString("NINO"), 
+                        rs.getString("AddressLine1"), 
+                        rs.getString("AddressLineTwo"), rs.getString("City"), 
+                        rs.getString("County"), rs.getString("Postcode"),
+                        rs.getInt("ID") ,rs.getString("Password"));
+                empList.add(emp);
+            }
+        }
+        catch(SQLException sqlex) 
+        {
+            System.out.println(sqlex.getMessage());
+            System.out.println("Duration update error\n");
+        }
         
         Integer i = 0;
+        Integer j = 0;
         for(Employee emp : empList)
         {
             String stfID = Integer.toString(emp.getSysEmpID());
@@ -100,6 +131,7 @@ public class LoginGUI extends javax.swing.JFrame
                 i = 1;
                 if(passwordInput.equals(stfPassword))
                 {
+                    j = 1;
                     if(emp.getEmpType().equals("Caretaker"))
                     {
                         CaretakerMainMenuGUI app = new CaretakerMainMenuGUI(this, emp.getSysEmpID());
@@ -107,7 +139,7 @@ public class LoginGUI extends javax.swing.JFrame
                     }
                     else if(emp.getEmpType().equals("Manager"))
                     {
-                        new ManagerMainMenuUI(this).setVisible(true);
+                        new ManagerMainMenuUI(this, emp.getSysEmpID()).setVisible(true);
                     }
                     else
                     {
@@ -115,16 +147,16 @@ public class LoginGUI extends javax.swing.JFrame
                     }
                     
                     this.setVisible(false);
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(this, "Username or Password incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                }   
             }
-            if(i == 0)
-            {
-                JOptionPane.showMessageDialog(this, "Username or Password incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
-            } 
+        }
+        if(i == 0)
+        {
+            JOptionPane.showMessageDialog(this, "Username or Password incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
+        } 
+        if(i == 1 && j == 0)
+        {
+            JOptionPane.showMessageDialog(this, "Username or Password incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }                                     
 
