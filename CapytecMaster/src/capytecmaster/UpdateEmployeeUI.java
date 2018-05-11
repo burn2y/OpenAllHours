@@ -213,8 +213,6 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
             }
         });
         
-        
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -374,8 +372,6 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
     
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
-        
-        // connect DB. Execute below stmt
         String sqlRemove = "DELETE * FROM EMPLOYEE WHERE ID = " + emp.getSysEmpID();
         
         try
@@ -408,17 +404,10 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
         {
             emp.setSName(surname.getText().trim());
         }
-        /*
-        String dob = dayOfBirth.getValue().toString() + "/" + monthOfBirth.getValue().toString() + "/" + yearOfBirth.getValue().toString();
-        if(dateInFuture(dob))
-        {
-            errors.add("Date is not valid!");
-        }
-        else
-        {          
-            emp.setDateOfBirth(dob);
-        }
-        */
+        
+        String dob = dayOfBirth.getValue().toString() + "/" + monthOfBirth.getValue().toString() + "/" + yearOfBirth.getValue().toString();     
+        emp.setDateOfBirth(dob);
+        
         if(male.isSelected() && female.isSelected())
         {
             errors.add("You have selected both male and female!");
@@ -427,11 +416,11 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
         {
             if(male.isSelected())
             {
-                emp.setGender("male");
+                emp.setGender("Male");
             }
             else
             {
-                emp.setGender("female");
+                emp.setGender("Female");
             }
         }
         
@@ -516,9 +505,10 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
             parent.setVisible(true);
             JOptionPane.showMessageDialog(null, "Employee Updated!", "Done", JOptionPane.INFORMATION_MESSAGE);
             
-            // Connect DB. Execute below stmt
              String sqlInsert = 
-                    "INSERT INTO employee (ID, Firstname, DateOfBirth, Surname, Gender, EmploymentType, Email, NINO, AddressLine1, AddressLineTwo, City, County, Postcode, Password)VALUES (" + emp.getSysEmpID() +  
+                    "INSERT INTO employee (ID, Firstname, DateOfBirth, Surname, Gender, "
+                     + "EmploymentType, Email, NINO, AddressLine1, AddressLineTwo, "
+                     + "City, County, Postcode, Password) VALUES (" + emp.getSysEmpID() +  
                     " , '" +  emp.getFName() + "' , '" + emp.getDateOfBirth() + 
                     "' , '" + emp.getSName() + "' , '" + emp.getGender() + 
                     "' , '" + emp.getEmpType() + "' , '" + emp.getEmail() + 
@@ -537,7 +527,6 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
               System.out.println(sqlex.getMessage());
               System.out.println("Duration update error\n");
             }
-            
         }
         else
         {
