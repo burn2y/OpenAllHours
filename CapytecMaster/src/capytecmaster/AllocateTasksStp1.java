@@ -5,7 +5,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
 
 /**
@@ -76,17 +78,15 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
                 ResultSet rs = stmt.executeQuery(getAllTsksSql);
                 while(rs.next())
                 {
+                    float demand = Float.valueOf(rs.getString("Demand").toString());
+                    float duration = Float.valueOf(rs.getString("Duration").toString());
                     
-                
-                    Employee emp = new Employee(rs.getString("Firstname"), 
-                            rs.getString("Surname"), rs.getString("DateOfBirth"),
-                            rs.getString("Gender"), rs.getString("EmploymentType"),
-                            rs.getString("Email"), rs.getString("NINO"), 
-                            rs.getString("AddressLine1"), 
-                            rs.getString("AddressLineTwo"), rs.getString("City"), 
-                            rs.getString("County"), rs.getString("Postcode"),
-                            rs.getInt("ID") ,rs.getString("Password"));
-                    //tskList.add(tsk);
+                    Task tsk = new Task(rs.getInt("ID"), rs.getInt("Allocated"), rs.getInt("Priority"), 
+                    rs.getInt("SignOff"), rs.getString("Description"), rs.getString("DateCreated"),rs.getString("DueDate"), 
+                    rs.getString("SignOffLevel"), demand, duration, rs.getInt("isNormal"), 
+                    rs.getString("Completed"));
+                    
+                    tskList.add(tsk);
                 }
             }
             catch(SQLException sqlex) {
@@ -96,7 +96,7 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
         
         for(Task tsk : tskList)
         {
-            if(tsk.getAllocatedTo() == null)
+            if(tsk.getAllocatedTo() == 0)
             {
                 Integer tskID = tsk.getTskID();
                 Object[] row = new Object[]

@@ -9,15 +9,14 @@ package capytecmaster;
 
 public class Task 
 {
-    public static int uIDCount;
     private Integer tskID, allocatedTo, priority, signedOffBy;
-    private String tskDescription, dateCreated, requiredSignOffLvl, dueDate;
+    private String tskDescription, dateCreated, requiredSignOffLvl, dueDate, completed;
     private Float physicalDemandsRating, expectedDuration;
     private Integer isNormal;
     public Task(Integer tskID, Integer allocatedTo, Integer priority, 
                 Integer signedOffBy, String tskDescription, String dateCreated,
                 String dueDate, String requiredSignOffLvl, 
-                Float physicalDemandsRating, Float expectedDuration, Integer isNormal)
+                Float physicalDemandsRating, Float expectedDuration, Integer isNormal, String completed)
     {
         this.tskID = tskID; //unique task ID
         this.allocatedTo = allocatedTo; //staff no the tsk is allocated to

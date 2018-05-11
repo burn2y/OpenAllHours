@@ -1,5 +1,9 @@
 package capytecmaster;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -8,6 +12,8 @@ public class AllocateTasksStp2 extends javax.swing.JFrame {
 
     AllocateTasksStp1 stp1;
     Integer tskID;
+    Connection dbConn = connection.connect();
+    Statement stmt = null;
     
     public AllocateTasksStp2(AllocateTasksStp1 stp1, Integer tskID){
         this.tskID = tskID;
@@ -55,14 +61,35 @@ public class AllocateTasksStp2 extends javax.swing.JFrame {
             }
         };
         
-        // connect DB. get all employees into arrayList where empType is Caretaker
         
-        String sqlGetEmployees = "SELECT * FROM EMPLOYEE  EMP_TYPE = 'Caretaker'";
         ArrayList<Employee> empList = new ArrayList<>();
+        
+        String getAllEmpsSql = "SELECT * FROM EMPLOYEE";
+             try
+            {
+                stmt = dbConn.createStatement();   
+                ResultSet rs = stmt.executeQuery(getAllEmpsSql);
+                while(rs.next())
+                {
+                    Employee emp = new Employee(rs.getString("Firstname"), 
+                            rs.getString("Surname"), rs.getString("DateOfBirth"),
+                            rs.getString("Gender"), rs.getString("EmploymentType"),
+                            rs.getString("Email"), rs.getString("NINO"), 
+                            rs.getString("AddressLine1"), 
+                            rs.getString("AddressLineTwo"), rs.getString("City"), 
+                            rs.getString("County"), rs.getString("Postcode"),
+                            rs.getInt("ID") ,rs.getString("Password"));
+                    empList.add(emp);
+                }
+            }
+            catch(SQLException sqlex) {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+        }
         
         for(Employee emp : empList)
         {
-            if(emp.getEmpType() == "Caretaker")
+            if("Caretaker".equals(emp.getEmpType()))
             {
                 String empID = Integer.toString(emp.getSysEmpID());
                 Object[] row = new Object[]
@@ -136,15 +163,27 @@ public class AllocateTasksStp2 extends javax.swing.JFrame {
         {
             JOptionPane.showMessageDialog(null, "You have not selected an employee!", "Done", JOptionPane.ERROR_MESSAGE);
         }
-        Integer empNo = Integer.parseInt(tblEmployee.getValueAt(tblEmployee.getSelectedRow(), 0).toString());
+        else
+        {
+            Integer empNo = Integer.parseInt(tblEmployee.getValueAt(tblEmployee.getSelectedRow(), 0).toString());
+            //Execute below sql
+            String sqlUpdateTsk = "UPDATE TASKS SET Allocated = " + empNo + " WHERE ID = "  + tskID;
         
-        
-        //Execute below sql
-        String sqlUpdateTsk = "UPDATE TASK SET ALLOCATED_TO = " + "'" + empNo + "'" + "WHERE TASK_ID = " + "'" + tskID + "'";
-        
-        JOptionPane.showMessageDialog(null, "Task Allocated!", "Done", JOptionPane.INFORMATION_MESSAGE);
-        this.setVisible(false);
-        stp1.getParent().setVisible(true);
+            try
+            {
+                stmt = dbConn.createStatement(); // create a statement
+                stmt.executeUpdate(sqlUpdateTsk); // execute update statement
+            }
+            catch(SQLException sqlex) 
+            {
+              System.out.println(sqlex.getMessage());
+              System.out.println("Duration update error\n");
+            }
+            
+            JOptionPane.showMessageDialog(null, "Task Allocated!", "Done", JOptionPane.INFORMATION_MESSAGE);
+            this.setVisible(false);
+            stp1.getParent().setVisible(true);
+        }
     }
                         
     private javax.swing.JButton allocate;
