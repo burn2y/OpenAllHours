@@ -567,7 +567,7 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
                 dayOfBirth.setValue(day);
                 monthOfBirth.setValue(month);
                 yearOfBirth.setValue(year);
-                if(emp.getGender() == "Male")
+                if("Male".equals(emp.getGender()))
                 {
                     male.setSelected(true);
                     female.setSelected(false);
@@ -590,7 +590,6 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
             }
         }
         }
-        
     }
 
     // Variables declaration - do not modify                     

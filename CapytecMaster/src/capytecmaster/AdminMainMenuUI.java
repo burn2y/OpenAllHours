@@ -15,9 +15,11 @@ public class AdminMainMenuUI extends javax.swing.JFrame {
     UpdateEmployeeUI newUpdateEmployeeUI;
     RemoveEmployeeUI newRemoveEmployeeUI;
     LoginGUI loginGUI;
+    Integer empID;
     
-    public AdminMainMenuUI(LoginGUI loginGUI) 
+    public AdminMainMenuUI(LoginGUI loginGUI, Integer empID) 
     {
+        this.empID = empID;
         this.loginGUI = loginGUI;
         initComponents();
     }
@@ -72,6 +74,8 @@ public class AdminMainMenuUI extends javax.swing.JFrame {
         adminLabel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         adminLabel.setText("Admin Menu");
 
+        jTextField1.setText("Employee " + empID + " logged in");
+        
         jTextField1.setEditable(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

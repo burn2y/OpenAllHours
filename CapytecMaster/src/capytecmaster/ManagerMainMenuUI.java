@@ -68,6 +68,8 @@ public class ManagerMainMenuUI extends javax.swing.JFrame
                 logoutActionPerformed(evt);
             }
         });
+        
+        logInInfo.setText("Employee " + empID + " logged in");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

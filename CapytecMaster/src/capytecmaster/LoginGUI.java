@@ -143,7 +143,7 @@ public class LoginGUI extends javax.swing.JFrame
                     }
                     else
                     {
-                        new AdminMainMenuUI(this).setVisible(true);
+                        new AdminMainMenuUI(this, emp.getSysEmpID()).setVisible(true);
                     }
                     
                     this.setVisible(false);

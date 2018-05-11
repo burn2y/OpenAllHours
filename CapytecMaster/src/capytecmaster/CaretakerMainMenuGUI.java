@@ -12,8 +12,9 @@ package capytecmaster;
 public class CaretakerMainMenuGUI extends javax.swing.JFrame {
 
     LoginGUI loginGUI;
-    
+    Integer empID;
     public CaretakerMainMenuGUI(LoginGUI loginGUI, Integer empID) {
+        this.empID = empID;
         this.loginGUI = loginGUI;
         initComponents();
     }
@@ -58,6 +59,8 @@ public class CaretakerMainMenuGUI extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel1.setText("Caretaker Menu");
+        
+        logInInfo.setText("Employee " + empID + " logged in");
 
         logInInfo.setEditable(false);
         logInInfo.addActionListener(new java.awt.event.ActionListener() {
