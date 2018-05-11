@@ -27,7 +27,7 @@ public class LoginGUI extends javax.swing.JFrame
         login = new javax.swing.JButton();
         username = new javax.swing.JTextField();
         lblUsername = new javax.swing.JLabel();
-        password = new javax.swing.JTextField();
+        password = new javax.swing.JPasswordField();
         lblPassword = new javax.swing.JLabel();
         title = new javax.swing.JLabel();
 
@@ -41,7 +41,7 @@ public class LoginGUI extends javax.swing.JFrame
         });
 
         lblUsername.setText("Username: ");
-        lblPassword.setText("Password:");
+        lblPassword.setText("Password: ");
 
         title.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         title.setText("Log In");
@@ -164,7 +164,7 @@ public class LoginGUI extends javax.swing.JFrame
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblUsername;
     private javax.swing.JButton login;
-    private javax.swing.JTextField password;
+    private javax.swing.JPasswordField password;
     private javax.swing.JLabel title;
     private javax.swing.JTextField username;
     // End of variables declaration                   
