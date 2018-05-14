@@ -9,11 +9,6 @@ import java.util.ArrayList;
 
 
 public class AdminMainMenuUI extends javax.swing.JFrame {
-
-    AddEmployeeUI newAddEmployeeUI;
-    LoginGUI loginForm;
-    UpdateEmployeeUI newUpdateEmployeeUI;
-    RemoveEmployeeUI newRemoveEmployeeUI;
     LoginGUI loginGUI;
     Integer empID;
     
@@ -133,19 +128,19 @@ public class AdminMainMenuUI extends javax.swing.JFrame {
 
     private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt) 
     {                                            
-        newAddEmployeeUI = new AddEmployeeUI(this);
+        AddEmployeeUI newAddEmployeeUI = new AddEmployeeUI(this);
         newAddEmployeeUI.setVisible(true);
         this.setVisible(false);
     }                                           
 
-    private void updateEmployeeActionPerformed(java.awt.event.ActionEvent evt) {                                               
-        newUpdateEmployeeUI = new UpdateEmployeeUI(this);
+    private void updateEmployeeActionPerformed(java.awt.event.ActionEvent evt) {   
+        UpdateEmployeeUI newUpdateEmployeeUI = new UpdateEmployeeUI(this);
         newUpdateEmployeeUI.setVisible(true);
         this.setVisible(false);
     }                                              
 
     private void removeEmployeeActionPerformed(java.awt.event.ActionEvent evt) {                                               
-        newRemoveEmployeeUI = new RemoveEmployeeUI(this);
+        RemoveEmployeeUI newRemoveEmployeeUI = new RemoveEmployeeUI(this);
         newRemoveEmployeeUI.setVisible(true);
         this.setVisible(false);
     }                                              

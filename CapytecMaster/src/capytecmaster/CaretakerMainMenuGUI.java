@@ -5,10 +5,6 @@
  */
 package capytecmaster;
 
-/**
- *
- * @author Chris
- */
 public class CaretakerMainMenuGUI extends javax.swing.JFrame {
 
     LoginGUI loginGUI;

@@ -513,7 +513,7 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
                     "' , '" + emp.getSName() + "' , '" + emp.getGender() + 
                     "' , '" + emp.getEmpType() + "' , '" + emp.getEmail() + 
                     "' , '" + emp.getNatInsuranceNo() + "' , '" + emp.getAddrLn1() +
-                    "' , '" + emp.getAddrLn2() + "', ' " + emp.getAddrCity() +
+                    "' , '" + emp.getAddrLn2() + "', '" + emp.getAddrCity() +
                     "' , '" + emp.getAddrCounty() + "' , '" + emp.getAddrPostcode() +
                     "' , '" + emp.getSysPassword() + "')";
             

@@ -13,8 +13,8 @@ import javax.swing.JOptionPane;
  */
 public class LoginGUI extends javax.swing.JFrame 
 {
-    Connection dbConn = connection.connect();
-    Statement stmt = null;
+    private Connection dbConn = connection.connect();
+    private Statement stmt = null;
     
     public LoginGUI() {
         initComponents();
