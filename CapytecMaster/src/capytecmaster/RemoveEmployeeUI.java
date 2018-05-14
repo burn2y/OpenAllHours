@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JOptionPane;
 
@@ -102,45 +103,71 @@ public class RemoveEmployeeUI extends javax.swing.JFrame {
 
     private void deleteActionPerformed(java.awt.event.ActionEvent evt) {   
         
-        String sqlGetNoOfEmps = "SELECT COUNT(*) AS NUMOFEMPS FROM EMPLOYEE";
-        Integer numOfEmpsInDatabase = 1;
-        try
+        ArrayList<Employee> empList = new ArrayList<>();
+        
+        String getAllEmpsSql = "SELECT * FROM EMPLOYEE";
+             try
             {
                 stmt = dbConn.createStatement();   
-                ResultSet rs = stmt.executeQuery(sqlGetNoOfEmps);
-                if(rs.next())
+                ResultSet rs = stmt.executeQuery(getAllEmpsSql);
+                while(rs.next())
                 {
-                    numOfEmpsInDatabase = rs.getInt("NUMOFEMPS");
+                    Employee emp = new Employee(rs.getString("Firstname"), 
+                            rs.getString("Surname"), rs.getString("DateOfBirth"),
+                            rs.getString("Gender"), rs.getString("EmploymentType"),
+                            rs.getString("Email"), rs.getString("NINO"), 
+                            rs.getString("AddressLine1"), 
+                            rs.getString("AddressLineTwo"), rs.getString("City"), 
+                            rs.getString("County"), rs.getString("Postcode"),
+                            rs.getInt("ID") ,rs.getString("Password"));
+                    empList.add(emp);
                 }
             }
-            catch(SQLException sqlex) 
-            {
+            catch(SQLException sqlex) {
               System.out.println(sqlex.getMessage());
               System.out.println("Duration update error\n");
-            }
-        
-        if(numOfEmpsInDatabase == 1)
+        }
+             
+        Integer i = 0;
+        for(Employee emp : empList)
         {
-            JOptionPane.showMessageDialog(null, "There is only one employee in the system!", "Error", JOptionPane.ERROR_MESSAGE);
+            if(empNumber.getText().equals(emp.getSysEmpID().toString()))
+            {
+                i = 1;
+            }
+        }
+        
+        if(i == 0)
+        {
+            JOptionPane.showMessageDialog(null, "The employee number you entered does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
         }
         else
         {
-           Integer empID = Integer.parseInt(empNumber.getText());
-            String sqlRemove = "DELETE * FROM EMPLOYEE WHERE ID = " + empID;
-            
-            try
+            Integer numOfEmpsInDatabase = empList.size();
+            if(numOfEmpsInDatabase == 1)
             {
-                stmt = dbConn.createStatement(); // create a statement
-                stmt.executeUpdate(sqlRemove); // execute update statement
+                JOptionPane.showMessageDialog(null, "There is only one employee in the system!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            catch(SQLException sqlex) 
+            else
             {
-              System.out.println(sqlex.getMessage());
-              System.out.println("Duration update error\n");
-            }
+                Integer empID = Integer.parseInt(empNumber.getText());
+                String sqlRemove = "DELETE * FROM EMPLOYEE WHERE ID = " + empID;
             
-            JOptionPane.showMessageDialog(null, "Employee number " + empID + " removed." , "Done", JOptionPane.INFORMATION_MESSAGE);
+                try
+                {
+                    stmt = dbConn.createStatement(); // create a statement
+                    stmt.executeUpdate(sqlRemove); // execute update statement
+                }
+                catch(SQLException sqlex) 
+                {
+                    System.out.println(sqlex.getMessage());
+                    System.out.println("Duration update error\n");
+                }
+            
+                JOptionPane.showMessageDialog(null, "Employee number " + empID + " removed." , "Done", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
+        
      
     }                                      
 
