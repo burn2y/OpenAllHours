@@ -143,8 +143,7 @@ public class RemoveEmployeeUI extends javax.swing.JFrame {
         }
         else
         {
-            Integer numOfEmpsInDatabase = empList.size();
-            if(numOfEmpsInDatabase == 1)
+            if(empList.size() == 1)
             {
                 JOptionPane.showMessageDialog(null, "There is only one employee in the system!", "Error", JOptionPane.ERROR_MESSAGE);
             }
