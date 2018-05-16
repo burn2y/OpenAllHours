@@ -372,9 +372,11 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
     
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
-        String sqlRemove = "DELETE * FROM EMPLOYEE WHERE ID = " + emp.getSysEmpID();
+        if(employeeTable.getSelectedRow() != -1)
+        {
+            String sqlRemove = "DELETE * FROM EMPLOYEE WHERE ID = " + emp.getSysEmpID();
         
-        try
+            try
             {
                 stmt = dbConn.createStatement(); // create a statement
                 stmt.executeUpdate(sqlRemove); // execute update statement
@@ -385,153 +387,159 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
               System.out.println("Duration update error\n");
             }
         
-        ArrayList<String> errors = new ArrayList<>();
+            ArrayList<String> errors = new ArrayList<>();
         
-        if("".equals(fName.getText().trim()))
-        {
-            errors.add("You have not entered a first name!");
-        }
-        else
-        {
-            emp.setFName(fName.getText().trim());
-        }
-        
-        if("".equals(surname.getText().trim()))
-        {
-            errors.add("You have not entered a surname!");
-        }
-        else
-        {
-            emp.setSName(surname.getText().trim());
-        }
-        
-        String dob = dayOfBirth.getValue().toString() + "/" + monthOfBirth.getValue().toString() + "/" + yearOfBirth.getValue().toString();     
-        emp.setDateOfBirth(dob);
-        
-        if(male.isSelected() && female.isSelected())
-        {
-            errors.add("You have selected both male and female!");
-        }
-        else
-        {
-            if(male.isSelected())
+            if("".equals(fName.getText().trim()))
             {
-                emp.setGender("Male");
+                errors.add("You have not entered a first name!");
             }
             else
             {
-                emp.setGender("Female");
+                emp.setFName(fName.getText().trim());
             }
-        }
         
-        emp.setEmpType(empType.getSelectedItem().toString());
-        
-        if("".equals(email.getText().trim()))
-        {
-            errors.add("You have not entered an email address!");
-        }
-        else
-        {
-            emp.setEmail(email.getText());
-        }
-        
-        if("".equals(natInsuranceNo.getText().trim()))
-        {
-            errors.add("You have not entered a national insurance number!");
-        }
-        else
-        {
-            emp.setNatInsuranceNo(natInsuranceNo.getText());
-        }
-        
-        if("".equals(addrLn1.getText().trim()))
-        {
-            errors.add("You have not entered the first line of your address!");
-        }
-        else
-        {
-            emp.setAddrLn1(addrLn1.getText());
-        }
-        
-        emp.setAddrLn2(addrLn2.getText());
-        
-        if("".equals(city.getText().trim()))
-        {
-            errors.add("You have not entered a city for your address!");
-        }
-        else
-        {
-            emp.setAddrCity(city.getText());
-        }
-        
-        if("".equals(county.getText().trim()))
-        {
-            errors.add("You have not entered a county for your address!");
-        }
-        else
-        {
-            emp.setAddrCounty(county.getText());
-        }
-        
-        if("".equals(postcode.getText().trim()))
-        {
-            errors.add("You have not entered a postcode for your address!");
-        }
-        else
-        {
-            emp.setAddrPostcode(postcode.getText());
-        }
-        
-        if("".equals(password.getPassword().toString().trim()))
-        {
-            errors.add("You have not entered a password!");
-        }
-        else
-        {
-            emp.setSysPassword(String.valueOf(password.getPassword()));
-        }
-        
-        String errorStr = "There were some errors with the data you submitted: \n";
-        Integer i = 1;
-        for(String element : errors)
-        {   
-            errorStr = errorStr + i + ": " + element + "\n";
-            i = i + 1;
-        }
-        
-        if(errors.isEmpty())
-        {
-            this.setVisible(false);
-            parent.setVisible(true);
-            JOptionPane.showMessageDialog(null, "Employee Updated!", "Done", JOptionPane.INFORMATION_MESSAGE);
-            
-             String sqlInsert = 
-                    "INSERT INTO employee (ID, Firstname, DateOfBirth, Surname, Gender, "
-                     + "EmploymentType, Email, NINO, AddressLine1, AddressLineTwo, "
-                     + "City, County, Postcode, Password) VALUES (" + emp.getSysEmpID() +  
-                    " , '" +  emp.getFName() + "' , '" + emp.getDateOfBirth() + 
-                    "' , '" + emp.getSName() + "' , '" + emp.getGender() + 
-                    "' , '" + emp.getEmpType() + "' , '" + emp.getEmail() + 
-                    "' , '" + emp.getNatInsuranceNo() + "' , '" + emp.getAddrLn1() +
-                    "' , '" + emp.getAddrLn2() + "', '" + emp.getAddrCity() +
-                    "' , '" + emp.getAddrCounty() + "' , '" + emp.getAddrPostcode() +
-                    "' , '" + emp.getSysPassword() + "')";
-            
-            try
+            if("".equals(surname.getText().trim()))
             {
-                stmt = dbConn.createStatement(); // create a statement
-                stmt.executeUpdate(sqlInsert); // execute update statement
+                errors.add("You have not entered a surname!");
             }
-            catch(SQLException sqlex) 
+            else
             {
-              System.out.println(sqlex.getMessage());
-              System.out.println("Duration update error\n");
+                emp.setSName(surname.getText().trim());
+            }
+        
+            String dob = dayOfBirth.getValue().toString() + "/" + monthOfBirth.getValue().toString() + "/" + yearOfBirth.getValue().toString();     
+            emp.setDateOfBirth(dob);
+        
+            if(male.isSelected() && female.isSelected())
+            {
+                errors.add("You have selected both male and female!");
+            }
+            else
+            {
+                if(male.isSelected())
+                {
+                    emp.setGender("Male");
+                }
+                else
+                {
+                    emp.setGender("Female");
+                }
+            }   
+        
+            emp.setEmpType(empType.getSelectedItem().toString());
+        
+            if("".equals(email.getText().trim()))
+            {
+                errors.add("You have not entered an email address!");
+            }
+            else
+            {
+                emp.setEmail(email.getText());
+            }
+        
+            if("".equals(natInsuranceNo.getText().trim()))
+            {
+                errors.add("You have not entered a national insurance number!");
+            }
+            else
+            {
+                emp.setNatInsuranceNo(natInsuranceNo.getText());
+            }
+        
+            if("".equals(addrLn1.getText().trim()))
+            {
+                errors.add("You have not entered the first line of your address!");
+            }
+            else
+            {
+                emp.setAddrLn1(addrLn1.getText());
+            }
+        
+            emp.setAddrLn2(addrLn2.getText());
+        
+            if("".equals(city.getText().trim()))
+            {
+                errors.add("You have not entered a city for your address!");
+            }
+            else
+            {
+                emp.setAddrCity(city.getText());
+            }
+        
+            if("".equals(county.getText().trim()))
+            {
+                errors.add("You have not entered a county for your address!");
+            }
+            else
+            {
+                emp.setAddrCounty(county.getText());
+            }
+        
+            if("".equals(postcode.getText().trim()))
+            {
+                errors.add("You have not entered a postcode for your address!");
+            }
+            else
+            {
+                emp.setAddrPostcode(postcode.getText());
+            }
+        
+            if("".equals(password.getPassword().toString().trim()))
+            {
+                errors.add("You have not entered a password!");
+            }
+            else
+            {
+                emp.setSysPassword(String.valueOf(password.getPassword()));
+            }
+        
+            String errorStr = "There were some errors with the data you submitted: \n";
+            Integer i = 1;
+            for(String element : errors)
+            {   
+                errorStr = errorStr + i + ": " + element + "\n";
+                i = i + 1;
+            }
+        
+            if(errors.isEmpty())
+            {
+                this.setVisible(false);
+                parent.setVisible(true);
+                JOptionPane.showMessageDialog(null, "Employee Updated!", "Done", JOptionPane.INFORMATION_MESSAGE);
+            
+                String sqlInsert = 
+                        "INSERT INTO employee (ID, Firstname, DateOfBirth, Surname, Gender, "
+                        + "EmploymentType, Email, NINO, AddressLine1, AddressLineTwo, "
+                        + "City, County, Postcode, Password) VALUES (" + emp.getSysEmpID() +  
+                        " , '" +  emp.getFName() + "' , '" + emp.getDateOfBirth() + 
+                        "' , '" + emp.getSName() + "' , '" + emp.getGender() + 
+                        "' , '" + emp.getEmpType() + "' , '" + emp.getEmail() + 
+                        "' , '" + emp.getNatInsuranceNo() + "' , '" + emp.getAddrLn1() +
+                        "' , '" + emp.getAddrLn2() + "', '" + emp.getAddrCity() +
+                        "' , '" + emp.getAddrCounty() + "' , '" + emp.getAddrPostcode() +
+                        "' , '" + emp.getSysPassword() + "')";
+                
+                try
+                {
+                    stmt = dbConn.createStatement(); // create a statement
+                    stmt.executeUpdate(sqlInsert); // execute update statement
+                }
+                catch(SQLException sqlex) 
+                {
+                    System.out.println(sqlex.getMessage());
+                    System.out.println("Duration update error\n");
+                }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, errorStr, "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
         else
         {
-            JOptionPane.showMessageDialog(null, errorStr, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "You have not selected an employee", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        
     }
     
     
@@ -590,6 +598,7 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
             }
         }
         }
+        
     }
 
     // Variables declaration - do not modify                     

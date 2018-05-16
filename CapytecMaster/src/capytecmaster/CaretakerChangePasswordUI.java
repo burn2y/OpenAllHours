@@ -167,18 +167,25 @@ public class CaretakerChangePasswordUI extends javax.swing.JFrame {
         {
             if(newPassword.getText().equals(newPassword1.getText()))
             {
-                String sqlUpdatePassword = "UPDATE EMPLOYEE SET Password = '" + newPassword.getText() + "' WHERE ID = "  + empID;
-                try
+                if(newPassword.getText().length() > 3)
                 {
-                    stmt = dbConn.createStatement(); // create a statement
-                    stmt.executeUpdate(sqlUpdatePassword); // execute update statement
+                    String sqlUpdatePassword = "UPDATE EMPLOYEE SET Password = '" + newPassword.getText() + "' WHERE ID = "  + empID;
+                    try
+                    {
+                        stmt = dbConn.createStatement(); // create a statement
+                        stmt.executeUpdate(sqlUpdatePassword); // execute update statement
+                    }
+                    catch(SQLException sqlex) 
+                    {
+                        System.out.println(sqlex.getMessage());
+                        System.out.println("Duration update error\n");
+                    }
+                    JOptionPane.showMessageDialog(this, "Your password has been changed", "Done", JOptionPane.INFORMATION_MESSAGE);
                 }
-                catch(SQLException sqlex) 
+                else
                 {
-                    System.out.println(sqlex.getMessage());
-                    System.out.println("Duration update error\n");
+                    JOptionPane.showMessageDialog(this, "Your password must be longer than 3 characters long1", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                JOptionPane.showMessageDialog(this, "Your password has been changed", "Done", JOptionPane.INFORMATION_MESSAGE);
             }
             else
             {
