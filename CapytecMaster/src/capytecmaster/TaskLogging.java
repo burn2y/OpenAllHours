@@ -37,92 +37,36 @@ public class TaskLogging extends javax.swing.JFrame {
         initComponents();
     }
     
-    private static java.sql.Date getCurrentDate() {
-        java.util.Date today = new java.util.Date();
-        return new java.sql.Date(today.getTime());
-    }
-
-    
     public void Insert(int taskID, long dateCreated) {
         // query block start
-       
         long ts = System.currentTimeMillis();
         long resultTime = ts - dateCreated;
-        int days = (int) (resultTime / (1000*60*60*24));
-
-        int days2 = days / 100000;
-
-        System.out.println("days: "+days + " days 2: "+days2);
-
-        PreparedStatement stmtc = null;
-        PreparedStatement stmt = null;
-
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
-       
-        //java.sql.Date sqlDate = new java.sql.Date(df.getTime());
-
-        //df.format(currentDate);
-
-        //System.out.println("date entry : "+df.format(currentDate));
-       
-        String update = "UPDATE tasks SET expectedDuration = "+days2+" WHERE taskID = "+taskID+"";
-        String complete = "UPDATE tasks SET DateDue = "+getCurrentDate()+" WHERE taskID = "+taskID+"";
-       
-        System.out.println("current date: " + getCurrentDate());
-       
-        try {
-            stmt = dbConn.prepareStatement(update); // create a statement
-            stmt.executeUpdate(); // execute update statement
+        int days = (int) (resultTime / (10000*60*60*24));
+        int days2 = days / 10000;
+        System.out.println("days: " + days + " days 2: " + days2);
+        
+        java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
+        
+        PreparedStatement sqlUpdate = null;
   
-            int result = stmt.executeUpdate();
-          
-            if (result == 0) {
-                System.err.println ("result set returned 0\n");
-            }
-          
-        } catch(SQLException sqlex) {
-              System.out.println(sqlex.getMessage());
-              System.out.println("Duration update error\n");
-        }
-       
         try {
-            stmtc = dbConn.prepareStatement(complete); // create a statement
-            //stmtc.setDate(11, getCurrentDate());
-            stmtc.executeUpdate(); // execute update statement
-  
-            int result = stmtc.executeUpdate();
-          
-            if (result == 0) {
-                System.err.println ("result set returned 0\n");
-            }
-          
+            sqlUpdate = dbConn.prepareStatement("UPDATE tasks SET "
+                    + "Duration = ?, "
+                    + "Completed = ? "
+                    + "WHERE ID = ?"); // create a statement
+            
+            sqlUpdate.setInt(1,days2);
+            sqlUpdate.setDate(2,sqlDate);
+            sqlUpdate.setInt(3,taskID);
+             
+            sqlUpdate.executeUpdate(); // execute update statement
         } catch(SQLException sqlex) {
-              System.out.println(sqlex.getMessage());
-              System.out.println("Completion date update error\n");
-        }
-       
-        finally {
-
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch(SQLException sqlex) {
-              System.out.println(sqlex.getMessage());
-              System.out.println("Error closing statement\n");
-            }
-        }
-
-        if (dbConn != null) {
-            try {
-                dbConn.close();
-                } catch(SQLException sqlex) {
-                System.out.println(sqlex.getMessage());
-                System.out.println("Error closing DB connection after statement\n");
-                }
-            }
-        }               
-        JOptionPane.showMessageDialog(null, "Updated", "Task Completed", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println(sqlex.getMessage());
+            System.out.println("Completion date update error\n");
+        } finally {
+            JOptionPane.showMessageDialog(null, "Updated", 
+                                        "Task Completed", JOptionPane.INFORMATION_MESSAGE);
+        } 
     }
     
     public void ListTasks(int input) {
@@ -151,7 +95,6 @@ public class TaskLogging extends javax.swing.JFrame {
        
         jTable1.setModel(model);
        
-
         try{
         stmt = dbConn.createStatement();   
         ResultSet rs = stmt.executeQuery(query);
@@ -195,6 +138,8 @@ public class TaskLogging extends javax.swing.JFrame {
                 ,"Sign Off Level"
                 ,"Demand"
                 ,"Duration"
+                ,"Normal Task?"
+                ,"Due Date"
                 ,"Completed"};
 
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -226,7 +171,9 @@ public class TaskLogging extends javax.swing.JFrame {
                 rs.getString(7)+ "",
                 rs.getString(8)+ "",
                 rs.getString(9)+ "",
-                rs.getString(10)}); 
+                rs.getString(10)+ "",
+                rs.getString(11)+ "",
+                rs.getString(12)}); 
     } while (rs.next ());
   
         } catch (SQLException e ) {
@@ -252,7 +199,6 @@ public class TaskLogging extends javax.swing.JFrame {
        
         jTable1.setModel(model);
 
-
         Statement stmt = null;
         String query = "SELECT * FROM tasks WHERE Completed IS NULL";
        
@@ -264,7 +210,7 @@ public class TaskLogging extends javax.swing.JFrame {
        
         if (!moreRecords) {
             return;
-    }   
+        }   
            
         do {
             model.addRow(new String[] {
@@ -276,7 +222,7 @@ public class TaskLogging extends javax.swing.JFrame {
                 rs.getString(6)+ "",
                 rs.getString(7)+ "",
                 rs.getString(8)});
-    } while (rs.next ());
+        } while (rs.next ());
   
         } catch (SQLException e ) {
             System.err.println ("unsuccessful\n");
@@ -322,6 +268,8 @@ public class TaskLogging extends javax.swing.JFrame {
         jTextField10 = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jTextField11 = new javax.swing.JTextField();
         jButton6 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -361,14 +309,9 @@ public class TaskLogging extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6", "Title 7", "Title 8"
             }
         ));
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTable1MouseClicked(evt);
-            }
-        });
         jScrollPane1.setViewportView(jTable1);
 
-        jButton4.setText("worked");
+        jButton4.setText("completed");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
@@ -408,52 +351,59 @@ public class TaskLogging extends javax.swing.JFrame {
 
         jLabel10.setText("Task Type");
 
+        jLabel11.setText("Date Created");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel8))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                                .addComponent(jTextField2))
-                            .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel10)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel9))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField10, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
-                            .addComponent(jTextField9)
-                            .addComponent(jTextField5)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel8))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                                    .addComponent(jTextField2)
+                                    .addComponent(jTextField8, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                                    .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                                    .addComponent(jTextField11))))
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel9))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextField10, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
+                                    .addComponent(jTextField9)
+                                    .addComponent(jTextField5)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addGap(31, 31, 31)
+                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(8, 8, 8))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(31, 31, 31)
-                        .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(8, 8, 8)
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8))
         );
@@ -502,9 +452,14 @@ public class TaskLogging extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel10)))))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jLabel10))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel11)
+                            .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 41, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2))
+                .addContainerGap())
         );
 
         jButton6.setText("Complete Task");
@@ -551,16 +506,17 @@ public class TaskLogging extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(80, 80, 80)
                         .addComponent(jButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6)))
-                .addContainerGap(109, Short.MAX_VALUE))
+                        .addComponent(jButton6)
+                        .addContainerGap(160, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         getAccessibleContext().setAccessibleName("panel");
@@ -572,12 +528,10 @@ public class TaskLogging extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // LOG:
-        if(jTable1.getSelectedRow() == -1)
-        {
+        if(jTable1.getSelectedRow() == -1) {
             JOptionPane.showMessageDialog(null, "Select an employee", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        else
-        {
+        else{
             Integer allocatedTo = Integer.parseInt(jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1).toString());
 
             System.out.println(allocatedTo);
@@ -611,6 +565,7 @@ public class TaskLogging extends javax.swing.JFrame {
                     jTextField3.setText(Priority);
                     jTextField4.setText(SignedOffBy);
                     jTextField5.setText(Completed);
+                    jTextField11.setText(DateTaskCreated);
 
                     jTextField6.setText(Demand);
                     jTextField7.setText(Duration);
@@ -620,9 +575,9 @@ public class TaskLogging extends javax.swing.JFrame {
 
                     jTextArea1.setText(Description);
                 }
-                } catch (SQLException e ) {
-                    System.err.println ("unsuccessful\n");
-                }
+            } catch (SQLException e ) {
+                System.err.println ("unsuccessful\n");
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -637,23 +592,27 @@ public class TaskLogging extends javax.swing.JFrame {
         
         //VALIDATION TO DO!!!!!!!!!!
         
-        //if (input == 0) {
-        //    JOptionPane.showMessageDialog(null,"input invalid", "Error", JOptionPane.ERROR_MESSAGE);
-        //} else {
-        //    ListTasks(input);
-        //}
+        if (input == 0) {
+            JOptionPane.showMessageDialog(null,"input invalid", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            ListTasks(input);
+        }
         
-        ListTasks(input);
+        //A DO WHILE FOR THE DIALOG BOX ^
+        
+        //ListTasks(input);
         //JPanel jpanel = new JPanel();
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //setBounds(200, 100, 250, 300);              
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // EDIT:
+        // EDIT: 
+        // Update the chosen task using information entered into the 
+        // form underneath the table, after retrieving the data from the
+        // text fields a prepared statement is used to test and enter
+        // into the database
         
-        int TaskID = 0;
- 
         PreparedStatement sqlUpdate = null;
         
         try { //driver & connects to the DB engine.
@@ -670,17 +629,28 @@ public class TaskLogging extends javax.swing.JFrame {
                 + "isNormal = ?" + " "
                 + "WHERE ID = ?");
         
-        sqlUpdate.setInt (1, TaskID);
-        //sqlUpdate.setString (2, newName);
-        //sqlUpdate.setInt (3, id);
-        //sqlUpdate.setString (4, name);
+        sqlUpdate.setString(1, jTextField2.getText());
+        sqlUpdate.setString(2, jTextField3.getText());
+        sqlUpdate.setString(3, jTextField4.getText());
+        sqlUpdate.setString(4, jTextArea1.getText());
+        sqlUpdate.setString(5, jTextField11.getText());
+        sqlUpdate.setString(6, jTextField8.getText());
+        sqlUpdate.setString(7, jTextField6.getText());
+        sqlUpdate.setString(8, jTextField7.getText());
+        sqlUpdate.setString(9, jTextField5.getText());
+        sqlUpdate.setString(10, jTextField9.getText());
+        sqlUpdate.setString(11, jTextField10.getText());
+        sqlUpdate.setInt(12, Integer.parseInt(jTextField1.getText())); 
         
-        //int result = sqlUpdate.executeUpdate ();
-
+        //int result = sqlUpdate.executeUpdate();
+        
+        sqlUpdate.executeUpdate();
 
         } catch (SQLException sqlex) {
-        System.err.println ("SQL Exception");
-        sqlex.printStackTrace();
+            System.err.println ("SQL Exception on EDIT");
+            //sqlex.printStackTrace();
+        } finally {
+            JOptionPane.showMessageDialog(null, "Task record Updated", "Updated", JOptionPane.PLAIN_MESSAGE);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -696,11 +666,11 @@ public class TaskLogging extends javax.swing.JFrame {
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // insert, pass values to function for validation?
-        
-        int testID = Integer.parseInt(jTextField1.getText());
+
+        Integer testID = Integer.parseInt(jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1).toString());
         
         Statement completeStmt = null;
-        String query = "SELECT DateCreated FROM tasks WHERE taskID = "+testID+"";
+        String query = "SELECT DateCreated FROM tasks WHERE ID = "+testID+"";
         
         try{
         completeStmt = dbConn.createStatement();    
@@ -713,8 +683,8 @@ public class TaskLogging extends javax.swing.JFrame {
             }
             //completionDate = DateCreated;
         } catch(SQLException sqlex) {
-            System.out.println(sqlex.getMessage());
-            System.out.println("error retrieving task complete from DB");
+            System.err.println(sqlex.getMessage());
+            System.err.println("error retrieving task complete from DB");
         }
         
         try{
@@ -722,15 +692,12 @@ public class TaskLogging extends javax.swing.JFrame {
             Date date = sdf.parse(DateCreated);
             dc = (date.getTime());
         } catch(Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("error parsing creation date");
+            System.err.println(e.getMessage());
+            System.err.println("error parsing creation date");
         }
+        System.out.println("testID: " +testID);
         Insert(testID,dc);
     }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTable1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -749,6 +716,7 @@ public class TaskLogging extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -764,6 +732,7 @@ public class TaskLogging extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
+    private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
