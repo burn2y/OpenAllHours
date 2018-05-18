@@ -41,9 +41,9 @@ public class TaskLogging extends javax.swing.JFrame {
         // query block start
         long ts = System.currentTimeMillis();
         long resultTime = ts - dateCreated;
-        int days = (int) (resultTime / (10000*60*60*24));
-        int days2 = days / 10000;
-        System.out.println("days: " + days + " days 2: " + days2);
+        int days = (int) (resultTime / (1000*60*60*24));
+        
+        System.out.println("days: " + days);
         
         java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
         
@@ -55,7 +55,7 @@ public class TaskLogging extends javax.swing.JFrame {
                     + "Completed = ? "
                     + "WHERE ID = ?"); // create a statement
             
-            sqlUpdate.setInt(1,days2);
+            sqlUpdate.setInt(1,days);
             sqlUpdate.setDate(2,sqlDate);
             sqlUpdate.setInt(3,taskID);
              
@@ -70,55 +70,55 @@ public class TaskLogging extends javax.swing.JFrame {
     }
     
     public void ListTasks(int input) {
-       
-        //String sql = "SELECT * FROM tasks WHERE Allocated = ?";
-        //PreparedStatement preparedStatement = dbConn.prepareStatement(sql);
-        //preparedStatement.setString(1, myInput);
-       
+        // LIST TASKS:
+        // List tasks bound to specific employee
+
         Statement stmt = null;
-        String query = "SELECT * FROM tasks WHERE AllocatedTo = "+input+"";
+        String query = "SELECT * FROM tasks WHERE Allocated = "+input+"";
           
         String[] header = new String[] {"Task ID"
                 ,"Allocated To"
                 ,"Task Priority"
                 ,"Signed Off"
                 ,"Description"
-                ,"Date Created"
-                ,"Date Due"
                 ,"Sign Off Level"
                 ,"Demand"
                 ,"Duration"
-                ,"One off or Regular"};
+                ,"Normal Task?"
+                ,"Date Created"
+                ,"Due Date"
+                ,"Completed"};
 
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model = new DefaultTableModel(null,header);
        
         jTable1.setModel(model);
        
-        try{
-        stmt = dbConn.createStatement();   
-        ResultSet rs = stmt.executeQuery(query);
+        try {
+            stmt = dbConn.createStatement();   
+            ResultSet rs = stmt.executeQuery(query);
        
-        boolean moreRecords = rs.next ();
+            boolean moreRecords = rs.next ();
        
-        if (!moreRecords) {
-            return;
-        }
+            if (!moreRecords) {
+                return;
+            }
        
-        do {
-            model.addRow(new String[] {
-                rs.getString(2) + "",
-                rs.getString(3) + "",
-                rs.getString(4)+ "",
-                rs.getString(5)+ "",
-                rs.getString(6)+ "",
-                rs.getString(7)+ "",
-                rs.getString(8)+ "",
-                rs.getString(9)+ "",
-                rs.getString(10)+ "",
-                rs.getString(11)+ "",
-                rs.getString(12)}); 
-    } while (rs.next ());
+            do {
+                model.addRow(new String[] {
+                    rs.getString("ID") + "",
+                    rs.getString("Allocated") + "",
+                    rs.getString("Priority") + "",
+                    rs.getString("SignOff")+ "",
+                    rs.getString("Description")+ "",
+                    rs.getString("SignOffLevel")+ "",
+                    rs.getString("Demand")+ "",
+                    rs.getString("Duration")+ "",
+                    rs.getString("isNormal")+ "",
+                    rs.getString("DateCreated")+ "",
+                    rs.getString("DueDate")+ "",
+                    rs.getString("Completed")}); 
+            } while (rs.next ());
   
         } catch (SQLException e ) {
             System.err.println ("unsuccessful\n");  
@@ -597,13 +597,7 @@ public class TaskLogging extends javax.swing.JFrame {
         } else {
             ListTasks(input);
         }
-        
-        //A DO WHILE FOR THE DIALOG BOX ^
-        
-        //ListTasks(input);
-        //JPanel jpanel = new JPanel();
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //setBounds(200, 100, 250, 300);              
+            
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
