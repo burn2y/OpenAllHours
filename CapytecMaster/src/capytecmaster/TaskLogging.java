@@ -42,9 +42,7 @@ public class TaskLogging extends javax.swing.JFrame {
         long ts = System.currentTimeMillis();
         long resultTime = ts - dateCreated;
         int days = (int) (resultTime / (1000*60*60*24));
-        
-        System.out.println("days: " + days);
-        
+   
         java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
         
         PreparedStatement sqlUpdate = null;
@@ -70,9 +68,11 @@ public class TaskLogging extends javax.swing.JFrame {
     }
     
     public void ListTasks(int input) {
-        // LIST TASKS:
-        // List tasks bound to specific employee
-
+       
+        //String sql = "SELECT * FROM tasks WHERE Allocated = ?";
+        //PreparedStatement preparedStatement = dbConn.prepareStatement(sql);
+        //preparedStatement.setString(1, myInput);
+       
         Statement stmt = null;
         String query = "SELECT * FROM tasks WHERE Allocated = "+input+"";
           
@@ -83,29 +83,29 @@ public class TaskLogging extends javax.swing.JFrame {
                 ,"Description"
                 ,"Sign Off Level"
                 ,"Demand"
-                ,"Duration"
-                ,"Normal Task?"
+                ,"Task Type"
                 ,"Date Created"
                 ,"Due Date"
-                ,"Completed"};
+                ,"Completed"
+                ,"Duration"};
 
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) taskTable.getModel();
         model = new DefaultTableModel(null,header);
        
-        jTable1.setModel(model);
+        taskTable.setModel(model);
        
         try {
-            stmt = dbConn.createStatement();   
-            ResultSet rs = stmt.executeQuery(query);
+        stmt = dbConn.createStatement();   
+        ResultSet rs = stmt.executeQuery(query);
        
-            boolean moreRecords = rs.next ();
+        boolean moreRecords = rs.next ();
        
-            if (!moreRecords) {
-                return;
-            }
+        if (!moreRecords) {
+            return;
+        }
        
-            do {
-                model.addRow(new String[] {
+        do {
+            model.addRow(new String[] {
                     rs.getString("ID") + "",
                     rs.getString("Allocated") + "",
                     rs.getString("Priority") + "",
@@ -113,39 +113,44 @@ public class TaskLogging extends javax.swing.JFrame {
                     rs.getString("Description")+ "",
                     rs.getString("SignOffLevel")+ "",
                     rs.getString("Demand")+ "",
-                    rs.getString("Duration")+ "",
                     rs.getString("isNormal")+ "",
                     rs.getString("DateCreated")+ "",
                     rs.getString("DueDate")+ "",
-                    rs.getString("Completed")}); 
+                    rs.getString("Completed")+ "",
+                    rs.getString("Duration")}); 
             } while (rs.next ());
   
-        } catch (SQLException e ) {
-            System.err.println ("unsuccessful\n");  
+        } catch (SQLException sqlex ) {
+            System.err.println(sqlex.getMessage());
+            System.err.println ("Error listing tasks"); 
         }         
     }
     
     public void tasksWorked() {
         // tasks worked
-        jPanel1.setVisible(true);
+        editPanel.setVisible(true);
+        carryOver.setVisible(true);
+        updateButton.setVisible(true);
+        completeButton.setVisible(false);
+        
         String[] header = new String[] {
                 "Task ID"
                 ,"Allocated To"
                 ,"Task Priority"
                 ,"Signed Off"
                 ,"Description"
-                ,"Date Created"
                 ,"Sign Off Level"
                 ,"Demand"
-                ,"Duration"
-                ,"Normal Task?"
+                ,"Task Type"
+                ,"Date Created"
                 ,"Due Date"
-                ,"Completed"};
+                ,"Completed"
+                ,"Duration"};
 
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) taskTable.getModel();
         model = new DefaultTableModel(null,header);
        
-        jTable1.setModel(model);
+        taskTable.setModel(model);
        
         Statement stmt = null;
         String query = "SELECT * FROM tasks WHERE Completed IS NOT NULL";
@@ -162,70 +167,80 @@ public class TaskLogging extends javax.swing.JFrame {
        
         do {
             model.addRow(new String[] {
-                rs.getString(1) + "",
-                rs.getString(2) + "",
-                rs.getString(3) + "",
-                rs.getString(4)+ "",
-                rs.getString(5)+ "",
-                rs.getString(6)+ "",
-                rs.getString(7)+ "",
-                rs.getString(8)+ "",
-                rs.getString(9)+ "",
-                rs.getString(10)+ "",
-                rs.getString(11)+ "",
-                rs.getString(12)}); 
+                rs.getString("ID") + "",
+                rs.getString("Allocated") + "",
+                rs.getString("Priority") + "",
+                rs.getString("SignOff")+ "",
+                rs.getString("Description")+ "",
+                rs.getString("SignOffLevel")+ "",
+                rs.getString("Demand")+ "",
+                rs.getString("isNormal")+ "",
+                rs.getString("DateCreated")+ "",
+                rs.getString("DueDate")+ "",
+                rs.getString("Completed")+ "",
+                rs.getString("Duration")}); 
     } while (rs.next ());
   
-        } catch (SQLException e ) {
-            System.err.println ("unsuccessful\n");
+        } catch (SQLException sqlex ) {
+            System.err.println(sqlex.getMessage());
+            System.err.println ("Error displaying worked tasks");
         }    
     }
-   
-    public void tasksOverdue() {
+    
+    public void tasksDue() {
         // tasksoverdue
-        jPanel1.setVisible(false);
+        carryOver.setVisible(false);
+        updateButton.setVisible(false);
+        editPanel.setVisible(false);
+        completeButton.setVisible(true);
+        
         String[] header = new String[] {
             "Task ID",
             "Allocated To",
             "Task Priority",
             "Sign Off",
             "Description",
-            "Date Created",
             "Sign Off Level",
-            "Demand"};
+            "Demand",
+            "Task Type",
+            "Date Created",
+            "Due Date"};
 
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) taskTable.getModel();
         model = new DefaultTableModel(null,header);
        
-        jTable1.setModel(model);
+        taskTable.setModel(model);
 
         Statement stmt = null;
         String query = "SELECT * FROM tasks WHERE Completed IS NULL";
        
         try{
-        stmt = dbConn.createStatement();   
-        ResultSet rs = stmt.executeQuery(query);
+            stmt = dbConn.createStatement();   
+            ResultSet rs = stmt.executeQuery(query);
        
-        boolean moreRecords = rs.next ();
+            boolean moreRecords = rs.next ();
        
-        if (!moreRecords) {
-            return;
-        }   
+            if (!moreRecords) {
+                return;
+            }   
            
-        do {
+            do {
             model.addRow(new String[] {
-                rs.getInt(1) + "",
-                rs.getString(2) + "",
-                rs.getString(3)+ "",
-                rs.getString(4)+ "",
-                rs.getString(5)+ "",
-                rs.getString(6)+ "",
-                rs.getString(7)+ "",
-                rs.getString(8)});
-        } while (rs.next ());
+                rs.getString("ID") + "",
+                rs.getString("Allocated") + "",
+                rs.getString("Priority") + "",
+                rs.getString("SignOff")+ "",
+                rs.getString("Description")+ "",
+                rs.getString("SignOffLevel")+ "",
+                rs.getString("Demand")+ "",
+                rs.getString("isNormal")+ "",
+                rs.getString("DateCreated")+ "",
+                rs.getString("DueDate")}); 
+            } while (rs.next ());
   
-        } catch (SQLException e ) {
-            System.err.println ("unsuccessful\n");
+        } catch (SQLException sqlex ) {
+            System.err.println(sqlex.getMessage());
+            System.err.println ("Error displaying due tasks");
         }    
     } 
        
@@ -238,65 +253,65 @@ public class TaskLogging extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        carryOver = new javax.swing.JButton();
+        findButton = new javax.swing.JButton();
+        updateButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
-        jTextField7 = new javax.swing.JTextField();
+        taskTable = new javax.swing.JTable();
+        completedButton = new javax.swing.JButton();
+        overdueButton = new javax.swing.JButton();
+        editPanel = new javax.swing.JPanel();
+        taskTextField = new javax.swing.JTextField();
+        allocateTextField = new javax.swing.JTextField();
+        prioTextField = new javax.swing.JTextField();
+        SignOffTextField = new javax.swing.JTextField();
+        completedTextField = new javax.swing.JTextField();
+        demandTextField = new javax.swing.JTextField();
+        durationTextField = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jTextField8 = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        jTextField9 = new javax.swing.JTextField();
-        jTextField10 = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jTextField11 = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
+        DescArea = new javax.swing.JTextArea();
+        idLabel = new javax.swing.JLabel();
+        allocateLabel = new javax.swing.JLabel();
+        prioLabel = new javax.swing.JLabel();
+        signOffLabel = new javax.swing.JLabel();
+        CompletedLabel = new javax.swing.JLabel();
+        DemandLabel = new javax.swing.JLabel();
+        DurationLabel = new javax.swing.JLabel();
+        SignLevelTextField = new javax.swing.JTextField();
+        SignLevelLabel = new javax.swing.JLabel();
+        DueDateTextField = new javax.swing.JTextField();
+        taskTypeTextField = new javax.swing.JTextField();
+        DueDateLabel = new javax.swing.JLabel();
+        TaskTypeLabel = new javax.swing.JLabel();
+        DateCreatedLabel = new javax.swing.JLabel();
+        dateCreateTextField = new javax.swing.JTextField();
+        completeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setText(">>");
-        jButton1.setName("select"); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        carryOver.setText(">>");
+        carryOver.setName("select"); // NOI18N
+        carryOver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                carryOverActionPerformed(evt);
             }
         });
 
-        jButton2.setText("find");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        findButton.setText("find");
+        findButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                findButtonActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Edit Task");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        updateButton.setText("Update");
+        updateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                updateButtonActionPerformed(evt);
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        taskTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null},
@@ -309,163 +324,163 @@ public class TaskLogging extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6", "Title 7", "Title 8"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(taskTable);
 
-        jButton4.setText("completed");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        completedButton.setText("completed");
+        completedButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                completedButtonActionPerformed(evt);
             }
         });
 
-        jButton5.setText("overdue");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        overdueButton.setText("overdue");
+        overdueButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                overdueButtonActionPerformed(evt);
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(153, 255, 153));
+        editPanel.setBackground(new java.awt.Color(153, 255, 153));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        DescArea.setColumns(20);
+        DescArea.setRows(5);
+        jScrollPane2.setViewportView(DescArea);
 
-        jLabel1.setText("Task ID");
+        idLabel.setText("Task ID");
 
-        jLabel2.setText("Allocated to");
+        allocateLabel.setText("Allocated to");
 
-        jLabel3.setText("Priority");
+        prioLabel.setText("Priority");
 
-        jLabel4.setText("Signed Off By");
+        signOffLabel.setText("Signed Off By");
 
-        jLabel6.setText("Completed");
+        CompletedLabel.setText("Completed");
 
-        jLabel5.setText("Demand");
+        DemandLabel.setText("Demand");
 
-        jLabel7.setText("Duration");
+        DurationLabel.setText("Duration");
 
-        jLabel8.setText("Sign Off Level");
+        SignLevelLabel.setText("Sign Off Level");
 
-        jLabel9.setText("Due Date");
+        DueDateLabel.setText("Due Date");
 
-        jLabel10.setText("Task Type");
+        TaskTypeLabel.setText("Task Type");
 
-        jLabel11.setText("Date Created");
+        DateCreatedLabel.setText("Date Created");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout editPanelLayout = new javax.swing.GroupLayout(editPanel);
+        editPanel.setLayout(editPanelLayout);
+        editPanelLayout.setHorizontalGroup(
+            editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1)
+                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(editPanelLayout.createSequentialGroup()
+                        .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(editPanelLayout.createSequentialGroup()
+                                .addComponent(idLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel8))
+                                .addComponent(taskTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(editPanelLayout.createSequentialGroup()
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(allocateLabel)
+                                    .addComponent(prioLabel)
+                                    .addComponent(signOffLabel)
+                                    .addComponent(SignLevelLabel))
                                 .addGap(18, 18, 18)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                                    .addComponent(jTextField2)
-                                    .addComponent(jTextField8, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                                    .addComponent(jTextField11))))
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(prioTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                                    .addComponent(allocateTextField)
+                                    .addComponent(SignLevelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                                    .addComponent(SignOffTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                                    .addComponent(dateCreateTextField))))
                         .addGap(28, 28, 28)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel10)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel9))
+                        .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(editPanelLayout.createSequentialGroup()
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(TaskTypeLabel)
+                                    .addComponent(CompletedLabel)
+                                    .addComponent(DueDateLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField10, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
-                                    .addComponent(jTextField9)
-                                    .addComponent(jTextField5)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel7)
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(taskTypeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
+                                    .addComponent(DueDateTextField)
+                                    .addComponent(completedTextField)))
+                            .addGroup(editPanelLayout.createSequentialGroup()
+                                .addComponent(DurationLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
+                                .addComponent(durationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(editPanelLayout.createSequentialGroup()
+                                .addComponent(DemandLabel)
                                 .addGap(31, 31, 31)
-                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(demandTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(8, 8, 8))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel11)
+                    .addGroup(editPanelLayout.createSequentialGroup()
+                        .addComponent(DateCreatedLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        editPanelLayout.setVerticalGroup(
+            editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel5)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(editPanelLayout.createSequentialGroup()
+                        .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(taskTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(idLabel)
+                            .addComponent(DemandLabel)
+                            .addComponent(demandTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(editPanelLayout.createSequentialGroup()
                                 .addGap(7, 7, 7)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2))
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(allocateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(allocateLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3))
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(prioTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(prioLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4))
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(SignOffTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(signOffLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel8)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(SignLevelTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(SignLevelLabel)))
+                            .addGroup(editPanelLayout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel7))
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(durationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(DurationLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel6))
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(completedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(CompletedLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel9))
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(DueDateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(DueDateLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel10))))
+                                .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(taskTypeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(TaskTypeLabel))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel11)
-                            .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(DateCreatedLabel)
+                            .addComponent(dateCreateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 41, Short.MAX_VALUE))
                     .addComponent(jScrollPane2))
                 .addContainerGap())
         );
 
-        jButton6.setText("Complete Task");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        completeButton.setText("Complete Task");
+        completeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                completeButtonActionPerformed(evt);
             }
         });
 
@@ -479,19 +494,19 @@ public class TaskLogging extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1044, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1))
+                        .addComponent(carryOver))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2)
+                        .addComponent(findButton)
                         .addGap(71, 71, 71)
-                        .addComponent(jButton4)
+                        .addComponent(completedButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton5))
+                        .addComponent(overdueButton))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(editPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(completeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(updateButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -499,40 +514,40 @@ public class TaskLogging extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton4)
-                    .addComponent(jButton5))
+                    .addComponent(findButton)
+                    .addComponent(completedButton)
+                    .addComponent(overdueButton))
                 .addGap(47, 47, 47)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(carryOver))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(80, 80, 80)
-                        .addComponent(jButton3)
+                        .addComponent(updateButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6)
+                        .addComponent(completeButton)
                         .addContainerGap(160, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(editPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         getAccessibleContext().setAccessibleName("panel");
         getAccessibleContext().setAccessibleDescription("");
-        getAccessibleContext().setAccessibleParent(jButton1);
+        getAccessibleContext().setAccessibleParent(carryOver);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void carryOverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_carryOverActionPerformed
         // LOG:
-        if(jTable1.getSelectedRow() == -1) {
+        if(taskTable.getSelectedRow() == -1) {
             JOptionPane.showMessageDialog(null, "Select an employee", "Error", JOptionPane.ERROR_MESSAGE);
         }
         else{
-            Integer allocatedTo = Integer.parseInt(jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1).toString());
+            Integer allocatedTo = Integer.parseInt(taskTable.getModel().getValueAt(taskTable.getSelectedRow(), 1).toString());
 
             System.out.println(allocatedTo);
            
@@ -558,30 +573,28 @@ public class TaskLogging extends javax.swing.JFrame {
                     String DueDate = rs.getString("DueDate");
                     String isNormal = rs.getString("isNormal");
                    
-                    System.out.println(ID + "\t" + " " + Allocated + " " + "\t" + DateTaskCreated);
-                   
-                    jTextField1.setText(ID);
-                    jTextField2.setText(Allocated);
-                    jTextField3.setText(Priority);
-                    jTextField4.setText(SignedOffBy);
-                    jTextField5.setText(Completed);
-                    jTextField11.setText(DateTaskCreated);
+                    taskTextField.setText(ID);
+                    allocateTextField.setText(Allocated);
+                    prioTextField.setText(Priority);
+                    SignOffTextField.setText(SignedOffBy);
+                    completedTextField.setText(Completed);
+                    dateCreateTextField.setText(DateTaskCreated);
+                    demandTextField.setText(Demand);
+                    durationTextField.setText(Duration);
+                    SignLevelTextField.setText(SignOffLevel);
+                    DueDateTextField.setText(DueDate);
+                    taskTypeTextField.setText(isNormal);
 
-                    jTextField6.setText(Demand);
-                    jTextField7.setText(Duration);
-                    jTextField8.setText(SignOffLevel);
-                    jTextField9.setText(DueDate);
-                    jTextField10.setText(isNormal);
-
-                    jTextArea1.setText(Description);
+                    DescArea.setText(Description);
                 }
-            } catch (SQLException e ) {
-                System.err.println ("unsuccessful\n");
+            } catch (SQLException sqlex ) {
+                System.err.println(sqlex.getMessage());
+                System.err.println("Error retrieving task from DB");
             }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_carryOverActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void findButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findButtonActionPerformed
         // FIND:
         // seperate pop up box to find allocated to - completed or not completed (button)
         // SELECT * FROM tasks WHERE ALLOCATED = (variable inserted - int)
@@ -597,15 +610,85 @@ public class TaskLogging extends javax.swing.JFrame {
         } else {
             ListTasks(input);
         }
-            
-    }//GEN-LAST:event_jButton2ActionPerformed
+        
+        //A DO WHILE FOR THE DIALOG BOX ^        
+    }//GEN-LAST:event_findButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
         // EDIT: 
         // Update the chosen task using information entered into the 
         // form underneath the table, after retrieving the data from the
         // text fields a prepared statement is used to test and enter
         // into the database
+        
+        try {
+            // validate input - empty fields
+            if (allocateTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (prioTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (SignOffTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (DescArea.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (dateCreateTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (SignLevelTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (demandTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (durationTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (completedTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (DueDateTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (taskTypeTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (taskTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,"Allocated can not be null", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
+            try {
+                // validate input - number only format
+                int a = Integer.parseInt(allocateTextField.getText());
+                int p = Integer.parseInt(prioTextField.getText());
+                int s = Integer.parseInt(SignOffTextField.getText());
+                int de = Integer.parseInt(demandTextField.getText());
+                int du = Integer.parseInt(durationTextField.getText());
+                int t = Integer.parseInt(taskTypeTextField.getText());
+            }catch(NumberFormatException e){
+                System.err.println(e.getMessage());
+                System.err.println("Number format exception");
+            }
+
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+            JOptionPane.showMessageDialog(null,"Problem with field formats", "Error", JOptionPane.ERROR_MESSAGE);
+        } 
         
         PreparedStatement sqlUpdate = null;
         
@@ -622,118 +705,116 @@ public class TaskLogging extends javax.swing.JFrame {
                 + "DueDate = ?, "
                 + "isNormal = ?" + " "
                 + "WHERE ID = ?");
-        
-        sqlUpdate.setString(1, jTextField2.getText());
-        sqlUpdate.setString(2, jTextField3.getText());
-        sqlUpdate.setString(3, jTextField4.getText());
-        sqlUpdate.setString(4, jTextArea1.getText());
-        sqlUpdate.setString(5, jTextField11.getText());
-        sqlUpdate.setString(6, jTextField8.getText());
-        sqlUpdate.setString(7, jTextField6.getText());
-        sqlUpdate.setString(8, jTextField7.getText());
-        sqlUpdate.setString(9, jTextField5.getText());
-        sqlUpdate.setString(10, jTextField9.getText());
-        sqlUpdate.setString(11, jTextField10.getText());
-        sqlUpdate.setInt(12, Integer.parseInt(jTextField1.getText())); 
+
+        sqlUpdate.setString(1, allocateTextField.getText());
+        sqlUpdate.setString(2, prioTextField.getText());
+        sqlUpdate.setString(3, SignOffTextField.getText());
+        sqlUpdate.setString(4, DescArea.getText());
+        sqlUpdate.setString(5, dateCreateTextField.getText());
+        sqlUpdate.setString(6, SignLevelTextField.getText());
+        sqlUpdate.setString(7, demandTextField.getText());
+        sqlUpdate.setString(8, durationTextField.getText());
+        sqlUpdate.setString(9, completedTextField.getText());
+        sqlUpdate.setString(10, DueDateTextField.getText());
+        sqlUpdate.setString(11, taskTypeTextField.getText());
+        sqlUpdate.setInt(12, Integer.parseInt(taskTextField.getText())); 
         
         //int result = sqlUpdate.executeUpdate();
         
         sqlUpdate.executeUpdate();
 
         } catch (SQLException sqlex) {
-            System.err.println ("SQL Exception on EDIT");
+            System.err.println(sqlex.getMessage());
+            System.err.println("SQL Exception on update");
             //sqlex.printStackTrace();
         } finally {
-            JOptionPane.showMessageDialog(null, "Task record Updated", "Updated", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Task record Updated", "update success", JOptionPane.PLAIN_MESSAGE);
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
+        
+    }//GEN-LAST:event_updateButtonActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // WORKED
+    private void completedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_completedButtonActionPerformed
+        // call tasks worked on click
         tasksWorked();
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_completedButtonActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // OVERDUE
-        tasksOverdue();
-    }//GEN-LAST:event_jButton5ActionPerformed
+    private void overdueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_overdueButtonActionPerformed
+        // call tasks due on click
+        tasksDue();
+    }//GEN-LAST:event_overdueButtonActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // insert, pass values to function for validation?
+    private void completeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_completeButtonActionPerformed
+        // prepare 
 
-        Integer testID = Integer.parseInt(jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1).toString());
+    Integer testID = Integer.parseInt(taskTable.getModel().getValueAt(taskTable.getSelectedRow(), 0).toString());
         
-        Statement completeStmt = null;
-        String query = "SELECT DateCreated FROM tasks WHERE ID = "+testID+"";
+    Statement completeStmt = null;
+    String query = "SELECT DateCreated FROM tasks WHERE ID = "+testID+"";
         
-        try{
+    try {
         completeStmt = dbConn.createStatement();    
         ResultSet rs = completeStmt.executeQuery(query);
-            while (rs.next()) {
-                //String DateCreatedDB = rs.getString("DateCreated");
-                //System.out.println("Date Created: " + DateCreated );
-                String DateCreatedDB = rs.getString("DateCreated");
-                DateCreated = DateCreatedDB;
-            }
-            //completionDate = DateCreated;
-        } catch(SQLException sqlex) {
-            System.err.println(sqlex.getMessage());
-            System.err.println("error retrieving task complete from DB");
-        }
         
-        try{
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = sdf.parse(DateCreated);
-            dc = (date.getTime());
-        } catch(Exception e) {
-            System.err.println(e.getMessage());
-            System.err.println("error parsing creation date");
+        while (rs.next()) {
+            String DateCreatedDB = rs.getString("DateCreated");
+            DateCreated = DateCreatedDB;
         }
-        System.out.println("testID: " +testID);
-        Insert(testID,dc);
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
+            
+    } catch(SQLException sqlex) {
+        System.err.println(sqlex.getMessage());
+        System.err.println("error retrieving task completion date from DB");
+    }
+        
+    try {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(DateCreated);
+        dc = (date.getTime());
+    } catch(Exception e) {
+        System.err.println(e.getMessage());
+        System.err.println("error parsing creation date");
+    }
+    System.out.println("testID: " +testID);
+    Insert(testID,dc);
+    
+    }//GEN-LAST:event_completeButtonActionPerformed
 
     public static void run() {
         new TaskLogging().setVisible(true);
     }
       
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel CompletedLabel;
+    private javax.swing.JLabel DateCreatedLabel;
+    private javax.swing.JLabel DemandLabel;
+    private javax.swing.JTextArea DescArea;
+    private javax.swing.JLabel DueDateLabel;
+    private javax.swing.JTextField DueDateTextField;
+    private javax.swing.JLabel DurationLabel;
+    private javax.swing.JLabel SignLevelLabel;
+    private javax.swing.JTextField SignLevelTextField;
+    private javax.swing.JTextField SignOffTextField;
+    private javax.swing.JLabel TaskTypeLabel;
+    private javax.swing.JLabel allocateLabel;
+    private javax.swing.JTextField allocateTextField;
+    private javax.swing.JButton carryOver;
+    private javax.swing.JButton completeButton;
+    private javax.swing.JButton completedButton;
+    private javax.swing.JTextField completedTextField;
+    private javax.swing.JTextField dateCreateTextField;
+    private javax.swing.JTextField demandTextField;
+    private javax.swing.JTextField durationTextField;
+    private javax.swing.JPanel editPanel;
+    private javax.swing.JButton findButton;
+    private javax.swing.JLabel idLabel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField11;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
-    private javax.swing.JTextField jTextField9;
+    private javax.swing.JButton overdueButton;
+    private javax.swing.JLabel prioLabel;
+    private javax.swing.JTextField prioTextField;
+    private javax.swing.JLabel signOffLabel;
+    private javax.swing.JTable taskTable;
+    private javax.swing.JTextField taskTextField;
+    private javax.swing.JTextField taskTypeTextField;
+    private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
 }

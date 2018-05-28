@@ -1,20 +1,27 @@
 package capytecmaster;
-
 import java.sql.*;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * GUI Class to add an employee to a database using information provided by the 
+ * user.
+ * 
  * @author Chris
  */
 public class AddEmployeeUI extends javax.swing.JFrame {
 
-   
+   // Parent GUI Declared
     private AdminMainMenuUI parent;
+    
+    // Connection retreived from connection class and stored in variable
+    // Statement also declared and set to null
     Connection dbConn = connection.connect();
     Statement stmt = null;
+    
+    // max empid declared
     Integer maxEmpID = null;
     
+    // constructor
     public AddEmployeeUI(AdminMainMenuUI p) {
         parent = p;       
         initComponents();
@@ -246,6 +253,7 @@ public class AddEmployeeUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>      
     
+    // action listener for back button
     private void backActionPerformed(java.awt.event.ActionEvent evt)
     {
         this.setVisible(false);
@@ -255,7 +263,10 @@ public class AddEmployeeUI extends javax.swing.JFrame {
                                    
 private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt) 
     {           
+        // errors set to 0
         Integer errors = 0;
+        
+        // error checking to see if fields are empty. 1 added to errors if field is empty
         if(name.getText().trim().isEmpty())
         {
             errors = errors + 1;
@@ -293,21 +304,27 @@ private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt)
             errors = errors + 1;
         }
         
+        // execute code id errors is 0
         if(errors == 0)
         {
+            // strings for gender, empType, date of birth and passwordInput
             String gender;
             String empType;
             String dateOfBirth = dayOfBirth.getValue().toString() + "/" + monthOfBirth.getValue().toString() + "/" + yearOfBirth.getValue();
             String passwordInput = String.valueOf(password.getPassword());
+            
             if(male.isSelected() == true)
             {
+                // gender set to male if male is selected in combobox
                 gender = "Male";
             }
             else
             {
+                // else set to female
                 gender = "Female";
             }
             
+            // empType set to getSelectedItem of combobox
             empType = jComboBox1.getSelectedItem().toString();
             
             
@@ -315,18 +332,23 @@ private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt)
             String maxEmpIDSql = "SELECT MAX(ID) AS MAXID FROM EMPLOYEE";
              try
             {
-                stmt = dbConn.createStatement();   
+                // statement created
+                stmt = dbConn.createStatement();
+                // query executed
                 ResultSet rs = stmt.executeQuery(maxEmpIDSql);
                 if(rs.next())
                 {
+                    // get maxEmpid from result set. Store in variable
                     maxEmpID = rs.getInt("MAXID");
                 }
             }
             catch(SQLException sqlex) {
+                // error catching
               System.out.println(sqlex.getMessage());
               System.out.println("Duration update error\n");
         }
             
+             // new Employee created
             Employee newEmp = new Employee(name.getText(), jTextField1.getText(), 
                     dateOfBirth, gender, empType, 
                     email.getText(), natInsuranceNo.getText(), 
@@ -335,7 +357,7 @@ private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt)
                     maxEmpID + 1, passwordInput);
             
             
-            
+            // sqlInsert string created from new Employee variable
             String sqlInsert = 
                     "INSERT INTO employee (ID, Firstname, DateOfBirth, Surname, Gender, EmploymentType, Email, NINO, AddressLine1, AddressLineTwo, City, County, Postcode, Password)VALUES (" + newEmp.getSysEmpID() +  
                     " , '" + newEmp.getFName() + "' , '" + newEmp.getDateOfBirth() + 
@@ -353,6 +375,7 @@ private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt)
             }
             catch(SQLException sqlex) 
             {
+                // error catching
               System.out.println(sqlex.getMessage());
               System.out.println("Duration update error\n");
             }
@@ -363,6 +386,7 @@ private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt)
         }
         else
         {
+            // if errors is not zero. Display error message
             JOptionPane.showMessageDialog(this, "The information you entered is invalid. Please check the form and try again.",
             "Error", JOptionPane.ERROR_MESSAGE);
         }

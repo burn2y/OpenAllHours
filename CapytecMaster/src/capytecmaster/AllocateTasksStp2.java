@@ -8,14 +8,24 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
+/*
+ * GUI class. Second step to allocate a task to an employee
+*/
 public class AllocateTasksStp2 extends javax.swing.JFrame {
 
+    // step one GUI class declared
     AllocateTasksStp1 stp1;
+    
+    // task id of task to be allocated declared
     Integer tskID;
+    // database connection retreived and stored in variablbe. Statement also declared
     Connection dbConn = connection.connect();
     Statement stmt = null;
     
+    
+    // constructor
     public AllocateTasksStp2(AllocateTasksStp1 stp1, Integer tskID){
+        // variables set and GUI initialised
         this.tskID = tskID;
         this.stp1 = stp1;
         initComponents();
@@ -157,30 +167,37 @@ public class AllocateTasksStp2 extends javax.swing.JFrame {
         
     }// </editor-fold>                        
 
+    // action listener of allocate task button
     private void allocateButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
         if(tblEmployee.getSelectedRow() == -1)
         {
+            // error message displayed is no row is selected
             JOptionPane.showMessageDialog(null, "You have not selected an employee!", "Done", JOptionPane.ERROR_MESSAGE);
         }
         else
         {
+            // employee number retreived from the table
             Integer empNo = Integer.parseInt(tblEmployee.getValueAt(tblEmployee.getSelectedRow(), 0).toString());
-            //Execute below sql
+            // SQL string declared
             String sqlUpdateTsk = "UPDATE TASKS SET Allocated = " + empNo + " WHERE ID = "  + tskID;
         
             try
             {
+                // SQL string executed
                 stmt = dbConn.createStatement(); // create a statement
                 stmt.executeUpdate(sqlUpdateTsk); // execute update statement
             }
             catch(SQLException sqlex) 
             {
+                // error catching
               System.out.println(sqlex.getMessage());
               System.out.println("Duration update error\n");
             }
             
+            // task allocated message displayed
             JOptionPane.showMessageDialog(null, "Task Allocated!", "Done", JOptionPane.INFORMATION_MESSAGE);
+            // GUI visibility set to true
             this.setVisible(false);
             stp1.getParent().setVisible(true);
         }

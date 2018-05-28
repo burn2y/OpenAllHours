@@ -5,13 +5,17 @@
  */
 package capytecmaster;
 
+// arrayList import
 import java.util.ArrayList;
 
-
+// class declaration
 public class AdminMainMenuUI extends javax.swing.JFrame {
+    
+    // loginGUI declared. empID also declared
     LoginGUI loginGUI;
     Integer empID;
     
+    // constructor
     public AdminMainMenuUI(LoginGUI loginGUI, Integer empID) 
     {
         this.empID = empID;
@@ -69,6 +73,7 @@ public class AdminMainMenuUI extends javax.swing.JFrame {
         adminLabel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         adminLabel.setText("Admin Menu");
 
+        // text field text to display info about who is logged in using emp number passed to constructor from loginGUI
         jTextField1.setText("Employee " + empID + " logged in");
         
         jTextField1.setEditable(false);
@@ -126,26 +131,34 @@ public class AdminMainMenuUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
+    // action listener for add employee button
     private void addEmployeeActionPerformed(java.awt.event.ActionEvent evt) 
-    {                                            
+    {                                         
+        // new addEmployee GUI created and set to visible
         AddEmployeeUI newAddEmployeeUI = new AddEmployeeUI(this);
         newAddEmployeeUI.setVisible(true);
         this.setVisible(false);
     }                                           
 
-    private void updateEmployeeActionPerformed(java.awt.event.ActionEvent evt) {   
+    // action listener for update employee button
+    private void updateEmployeeActionPerformed(java.awt.event.ActionEvent evt) {
+        // new UpdateEmployeeUI created and set to visible
         UpdateEmployeeUI newUpdateEmployeeUI = new UpdateEmployeeUI(this);
         newUpdateEmployeeUI.setVisible(true);
         this.setVisible(false);
     }                                              
-
-    private void removeEmployeeActionPerformed(java.awt.event.ActionEvent evt) {                                               
+    
+    // action listener for remove employee button
+    private void removeEmployeeActionPerformed(java.awt.event.ActionEvent evt) {
+        // new RemoveEmployeeUI created and set to visible
         RemoveEmployeeUI newRemoveEmployeeUI = new RemoveEmployeeUI(this);
         newRemoveEmployeeUI.setVisible(true);
         this.setVisible(false);
     }                                              
 
-    private void logoutActionPerformed(java.awt.event.ActionEvent evt) {                                       
+    // action listener for logout button
+    private void logoutActionPerformed(java.awt.event.ActionEvent evt) {
+        // this GUI visibility set to false and loginGUI visibility set to true
         this.setVisible(false);
         loginGUI.setVisible(true);
     }                                      

@@ -9,11 +9,6 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.time.LocalDateTime;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  *
@@ -21,14 +16,17 @@ import java.time.LocalDateTime;
  */
 public class UpdateEmployeeUI extends javax.swing.JFrame {
 
+    // variables declared
     private AdminMainMenuUI parent;
     private Employee emp;
     Connection dbConn = connection.connect();
     Statement stmt = null;
     ArrayList<Employee> empList = new ArrayList<>();
     
+    // constructor
     public UpdateEmployeeUI(AdminMainMenuUI p) 
     {
+        // variables set
         parent = p;
         initComponents();
     }
@@ -364,31 +362,42 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
+    // back button action listener
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
+        // this class set visible, parent class set to hidden
         this.setVisible(false);
         parent.setVisible(true);
     }
     
+    // update button action listener
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
+        // code continues if row is selected
         if(employeeTable.getSelectedRow() != -1)
         {
+            // SQL string declared
             String sqlRemove = "DELETE * FROM EMPLOYEE WHERE ID = " + emp.getSysEmpID();
         
             try
             {
+                // SQL executed
                 stmt = dbConn.createStatement(); // create a statement
                 stmt.executeUpdate(sqlRemove); // execute update statement
             }
             catch(SQLException sqlex) 
             {
+                // error catching
               System.out.println(sqlex.getMessage());
               System.out.println("Duration update error\n");
             }
         
+            // arrayList errors declared
             ArrayList<String> errors = new ArrayList<>();
         
+            
+            // validation code checks that user provides valid data. Error 
+            // message stored in arraylist if data invalid
             if("".equals(fName.getText().trim()))
             {
                 errors.add("You have not entered a first name!");
@@ -493,20 +502,26 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
                 emp.setSysPassword(String.valueOf(password.getPassword()));
             }
         
+            // error string declared
             String errorStr = "There were some errors with the data you submitted: \n";
             Integer i = 1;
             for(String element : errors)
             {   
+                // loop stores each error message into errorStr variable
                 errorStr = errorStr + i + ": " + element + "\n";
                 i = i + 1;
             }
         
+            // if no errors. Code continiues
             if(errors.isEmpty())
             {
+                // this class set to hidden and parent class set to visible
                 this.setVisible(false);
                 parent.setVisible(true);
+                // Info message shown
                 JOptionPane.showMessageDialog(null, "Employee Updated!", "Done", JOptionPane.INFORMATION_MESSAGE);
             
+                // SQL insert constructed
                 String sqlInsert = 
                         "INSERT INTO employee (ID, Firstname, DateOfBirth, Surname, Gender, "
                         + "EmploymentType, Email, NINO, AddressLine1, AddressLineTwo, "
@@ -521,37 +536,42 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
                 
                 try
                 {
+                    // SQL executed
                     stmt = dbConn.createStatement(); // create a statement
                     stmt.executeUpdate(sqlInsert); // execute update statement
                 }
                 catch(SQLException sqlex) 
                 {
+                    // error catching
                     System.out.println(sqlex.getMessage());
                     System.out.println("Duration update error\n");
                 }
             }
             else
             {
+                // if errors found. Error messagev displayed
                 JOptionPane.showMessageDialog(null, errorStr, "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
         else
         {
+            // error message displayed if employee not selected
             JOptionPane.showMessageDialog(null, "You have not selected an employee", "Error", JOptionPane.ERROR_MESSAGE);
         }
         
     }
     
-    
+    // stage (">>") button action listener
     private void stageButtonActionPerformed(java.awt.event.ActionEvent evt) 
     {   
         if(employeeTable.getSelectedRow() == -1)
         {
+            // error message displayed if row not selected
             JOptionPane.showMessageDialog(null, "You have not selected an employee!", "Error", JOptionPane.ERROR_MESSAGE);
         }
         else
         {
-            
+        // selected employees ID retrived and stored in arraylistt
         Integer empID = Integer.parseInt(employeeTable.getModel().getValueAt(employeeTable.getSelectedRow(), 0).toString());
         
         
@@ -561,6 +581,7 @@ public class UpdateEmployeeUI extends javax.swing.JFrame {
             
             if(emp.getSysEmpID() == empID)
             {
+                // when employee found. Populate text fields of GUI
                 this.emp = emp;
                 fName.setText(emp.getFName());
                 surname.setText(emp.getSName());

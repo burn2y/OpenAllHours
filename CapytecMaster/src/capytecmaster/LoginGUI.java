@@ -9,13 +9,16 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author w16012643
+ * @author Chris Burn (w16012643)
  */
 public class LoginGUI extends javax.swing.JFrame 
 {
+    
+    // database connection retrived from connection class and Statement declared
     private Connection dbConn = connection.connect();
     private Statement stmt = null;
     
+    // Login GUI constructor
     public LoginGUI() {
         initComponents();
     }
@@ -88,20 +91,25 @@ public class LoginGUI extends javax.swing.JFrame
         pack();
     }// </editor-fold>                        
 
+    // action listener for login button
     private void loginActionPerformed(java.awt.event.ActionEvent evt) 
-    {                                      
+    {                                  
+        // username and password retrieved from text fields and stored in variables
         String usernameInput = username.getText();
         String passwordInput = password.getText();
                 
-        // connect to db. get all employees into arrayList.
+        // arraylist declared
         ArrayList<Employee> empList = new ArrayList<>();
+        // SQL query created
         String getAllEmpsSql = "SELECT * FROM EMPLOYEE";
         try
         {
+            // SQL executed
             stmt = dbConn.createStatement();   
             ResultSet rs = stmt.executeQuery(getAllEmpsSql);
             while(rs.next())
             {
+                // new employee created from result set.
                 Employee emp = new Employee(rs.getString("Firstname"), 
                         rs.getString("Surname"), rs.getString("DateOfBirth"),
                         rs.getString("Gender"), rs.getString("EmploymentType"),
@@ -110,52 +118,68 @@ public class LoginGUI extends javax.swing.JFrame
                         rs.getString("AddressLineTwo"), rs.getString("City"), 
                         rs.getString("County"), rs.getString("Postcode"),
                         rs.getInt("ID") ,rs.getString("Password"));
+                // employee added to arraylist
                 empList.add(emp);
             }
         }
         catch(SQLException sqlex) 
         {
+            // error catching
             System.out.println(sqlex.getMessage());
             System.out.println("Duration update error\n");
         }
         
+        // two integers declared
         Integer i = 0;
         Integer j = 0;
+        
+        // for loop loops through ArrayList retrieved from database
         for(Employee emp : empList)
         {
+            // EmpID converted to string and stored in variable
             String stfID = Integer.toString(emp.getSysEmpID());
+            // password stored in variable
             String stfPassword = emp.getSysPassword();
             
+            // if employeeID equals employee ID user enters. Continue
             if(usernameInput.equals(stfID))
             {
+                // i set to 1 if username found
                 i = 1;
                 if(passwordInput.equals(stfPassword))
                 {
+                    // j set to 1 if password correct
                     j = 1;
+                    
                     if(emp.getEmpType().equals("Caretaker"))
                     {
+                        // Caretaker MainMenu created if empType is Caretaker
                         CaretakerMainMenuGUI app = new CaretakerMainMenuGUI(this, emp.getSysEmpID());
                         app.setVisible(true);
                     }
                     else if(emp.getEmpType().equals("Manager"))
                     {
+                        // ManagerMainMenuUI created if empType is Manager
                         new ManagerMainMenuUI(this, emp.getSysEmpID()).setVisible(true);
                     }
                     else
                     {
+                        // else Admin Main Menu
                         new AdminMainMenuUI(this, emp.getSysEmpID()).setVisible(true);
                     }
-                    
+                    // this GUI (Login) set to visible
                     this.setVisible(false);
                 }   
             }
         }
         if(i == 0)
         {
+            // if username is incorrect. Display error message
             JOptionPane.showMessageDialog(this, "Username or Password incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
         } 
         if(i == 1 && j == 0)
         {
+            // if username correct and password incorrect
             JOptionPane.showMessageDialog(this, "Username or Password incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }                                     

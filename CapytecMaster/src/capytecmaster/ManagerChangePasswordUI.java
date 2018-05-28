@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package capytecmaster;
 
-
+// classes imported
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,20 +9,21 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
- *
- * @author Chris
+ * GUI class changes password of the user by updating the database
+ * @author Chris Burn (w16012643)
  */
 public class ManagerChangePasswordUI extends javax.swing.JFrame {
 
-    
+    // variables declared
     private Integer empID;
     private ManagerMainMenuUI parent;
     Connection dbConn = connection.connect();
     Statement stmt = null;
     
-    
+    // constructor
     public ManagerChangePasswordUI(Integer empID, ManagerMainMenuUI p) 
     {
+        // variables set
         parent = p;
         this.empID = empID;
         initComponents();
@@ -137,57 +133,73 @@ public class ManagerChangePasswordUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
+    
+    // action listener for back button
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {                                        
         this.setVisible(false);
         parent.setVisible(true);
     }                                       
 
-    private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {                                           
-
-        
+    // action listener for confirm button
+    private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) 
+    {                                           
+        // current password string declared and set to null
         String strCurrentPassword = null;
+        
+        // SQL string declared
         String getAllEmpsSql = "SELECT * FROM EMPLOYEE WHERE ID = " + empID;
         try
         {
+            // database query executed
             stmt = dbConn.createStatement();   
             ResultSet rs = stmt.executeQuery(getAllEmpsSql);
             while(rs.next())
             {
+                // password retrived from result set
                 strCurrentPassword = rs.getString("Password");
             }
         }
         catch(SQLException sqlex) 
         {
+            // error catching
             System.out.println(sqlex.getMessage());
             System.out.println("Duration update error\n");
         }
         
-        
-        if(currentPassword.getText().equals(strCurrentPassword))
+        if(currentPassword.getText().equals(strCurrentPassword) && 
+                newPassword.getText().equals(newPassword1.getText()) &&
+                newPassword.getText().length() > 3)
         {
-            if(newPassword.getText().equals(newPassword1.getText()))
+            //.code runs if current password is equal to password retrieved from 
+            // the database AND if both new passwords provided match AND if 
+            // the new password is longer than 3 characters
+            
+            // SQL string to update users password created
+            String sqlUpdatePassword = "UPDATE EMPLOYEE SET Password = '" + 
+                    newPassword.getText() + "' WHERE ID = "  + empID;
+            try
             {
-                String sqlUpdatePassword = "UPDATE EMPLOYEE SET Password = '" + newPassword.getText() + "' WHERE ID = "  + empID;
-                try
-                {
-                    stmt = dbConn.createStatement(); // create a statement
-                    stmt.executeUpdate(sqlUpdatePassword); // execute update statement
-                }
-                catch(SQLException sqlex) 
-                {
-                    System.out.println(sqlex.getMessage());
-                    System.out.println("Duration update error\n");
-                }
-                JOptionPane.showMessageDialog(this, "Your password has been changed", "Done", JOptionPane.INFORMATION_MESSAGE);
+                // create and execute statement
+                stmt = dbConn.createStatement(); 
+                stmt.executeUpdate(sqlUpdatePassword); 
             }
-            else
+            catch(SQLException sqlex) 
             {
-                JOptionPane.showMessageDialog(this, "The new passwords you entered don't match", "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println(sqlex.getMessage());
+                System.out.println("Duration update error\n");
             }
+            
+            // message to user. Password changed
+            JOptionPane.showMessageDialog(this, "Your password has been changed", 
+                    "Done", JOptionPane.INFORMATION_MESSAGE);
+                
         }
         else
         {
-            JOptionPane.showMessageDialog(this, "The password you entered is incorrect", "Error", JOptionPane.ERROR_MESSAGE);
+            // else show error message
+            JOptionPane.showMessageDialog(this, 
+                    "The password you entered is incorrect", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
         }
     }                                          
 

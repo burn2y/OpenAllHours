@@ -11,16 +11,21 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * GUI class for the first step of allocating a task
+ * 
  * @author Chris
  */
 public class AllocateTasksStp1 extends javax.swing.JFrame {
 
+    // parent GUI declared
     private ManagerMainMenuUI parent;
+    
+    // connection retreived from database class
     Connection dbConn = connection.connect();
+    // Statement declared and set to null
     Statement stmt = null;
             
-    
+    // constructor
     public AllocateTasksStp1(ManagerMainMenuUI p) {
         parent = p;
         initComponents();
@@ -165,12 +170,18 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
     {
         if(tblTasks.getSelectedRow() == -1)
         {
+            // error message displayed if no task is selected
             JOptionPane.showMessageDialog(null, "You have not selected a task!", "Error", JOptionPane.ERROR_MESSAGE);
         }
         else
         {
+            // selected row retreived and stored in variable
             Integer selectedRow = tblTasks.getSelectedRow();
+            
+            // task ID retreived from table using getValueAt method. Result converted to string and stored in variable
             Integer tskID = Integer.parseInt(tblTasks.getValueAt(selectedRow, 0).toString());
+            
+            // step2 GUI created and visibility set to true
             AllocateTasksStp2 allocateTasksStp2 = new AllocateTasksStp2(this, tskID);
             allocateTasksStp2.setVisible(true);
             this.setVisible(false);
@@ -178,6 +189,7 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
         
     }
     
+    // method that returns the parent of the class
     public ManagerMainMenuUI getParent()
     {
         return parent;
