@@ -72,8 +72,6 @@ public class AllocateTasksStp1 extends javax.swing.JFrame {
             }
         };
         
-        // connect to DB. get all records into arrayList. substitute arrayList of tasks into for loop below
-        
         ArrayList<Task> tskList = new ArrayList<>();
         
         String getAllTsksSql = "SELECT * FROM TASKS";
